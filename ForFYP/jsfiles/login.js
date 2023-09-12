@@ -1,7 +1,7 @@
 // Import the functions
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js"; // Add the necessary Firestore imports
 
 // Firebase configuration
 const firebaseConfig = {
@@ -47,6 +47,12 @@ document.getElementById('User_phone').addEventListener('keydown', function (even
     }
 });
 
+document.getElementById('verifyCode').addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+        codeVerify();
+    }
+});
+
 window.sendCheck = function (event) {
     var number = document.getElementById('User_phone').value;
     const toCheckNum = `60${number}`;
@@ -67,18 +73,34 @@ window.sendCheck = function (event) {
         return;
     }
 
-    signInWithPhoneNumber(auth, PhoneNumber, window.recaptchaVerifier)
-        .then(function (confirmationResult) {
-            window.confirmationResult = confirmationResult;
 
-            document.getElementById('sender').style.display = 'none';
-            document.getElementById('verifier').style.display = 'block';
+    // Check if the phone number exists in Firestore
+    const usersRef = collection(firestore, 'users');
+    const q = query(usersRef, where('phoneNo', '==', toCheckNum));
 
-            console.log("OTP Sent");
-            alert("OTP Sent, please check your phone :D");
-        }).catch(function (error) {
-            console.error(error);
-            alert("Failed to send OTP. Please try again later.");
+    getDocs(q)
+        .then((Snapshot) => {
+            if (Snapshot.size === 0) {
+                alert("User Unauthorized.\nPlease reach to Admin for the issue.");
+            }
+            else {
+                signInWithPhoneNumber(auth, PhoneNumber, window.recaptchaVerifier)
+                    .then(function (confirmationResult) {
+                        window.confirmationResult = confirmationResult;
+
+                        document.getElementById('sender').style.display = 'none';
+                        document.getElementById('verifier').style.display = 'block';
+
+                        console.log("OTP Sent");
+                        alert("OTP Sent, please check your phone :D");
+                    }).catch(function (error) {
+                        console.error("Error sending OTP: ", error);
+                        alert("Failed to send OTP. Please try again later.");
+                    });
+            }
+        }).catch((error) => {
+            console.error("Error checking phone number in Firestore: ", error);
+            alert("An error occurred. Please try again later.");
         });
 }
 
@@ -86,9 +108,7 @@ function setRecaptchaVerified() {
     isRecaptchaVerified = true;
 }
 
-window.codeverify = function (event) {
-    event.preventDefault();
-
+window.codeVerify = function (event) {
     var code = document.getElementById('verifyCode').value;
 
     if (!window.confirmationResult) {
@@ -97,12 +117,18 @@ window.codeverify = function (event) {
     }
 
     window.confirmationResult.confirm(code)
-        .then(function () {
+        .then(function (success) {
             console.log('OTP Verified');
+
+            var uid = success.user.uid;
+            console.log(uid);
+            localStorage.setItem('userId', uid);
+
             alert("User Verified! Welcome to HRConnect Pro");
             window.location.href = "dashboard.php";
-        }).catch(function () {
-            alert("OTP Not correct! Please verify again");
+
+        }).catch(function (error) {
+            alert("OTP Not correct! Please verify again\n", error);
             console.log('OTP Not correct');
         });
 }

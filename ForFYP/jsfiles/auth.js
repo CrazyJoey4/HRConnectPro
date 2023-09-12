@@ -1,5 +1,6 @@
 // Import the functions
-import { initializeApp } from "firebase/app";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -32,3 +33,20 @@ function checkLoggedIn() {
             });
     }
 }
+
+// For Sign Out
+const signout = document.getElementById('signOut');
+
+signout.addEventListener('click', () => {
+    if (confirm("Are you sure you want to log out?")) {
+        // User confirmed, proceed with logout
+        auth.signOut()
+            .then(() => {
+                localStorage.clear();
+                window.location.assign('index.php');
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
+});

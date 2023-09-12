@@ -40,7 +40,7 @@
                     </div>
 
                     <div class="login-btn">
-                        <input type="button" name="Sign" id="Sign" value="Sign In" class="login" onclick="codeverify(event)">
+                        <input type="button" name="Sign" id="Sign" value="Sign In" class="login" onclick="codeVerify(event)">
                     </div>
                 </div>
             </div>
