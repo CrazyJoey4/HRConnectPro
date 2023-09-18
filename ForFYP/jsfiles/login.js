@@ -20,32 +20,37 @@ const firestore = getFirestore(firebaseApp);
 
 let isRecaptchaVerified = false;
 
-fetch('countries.json')
-    .then(response => response.json())
-    .then(data => {
-        if (Array.isArray(data)) {
-            const countryCodeSelect = document.getElementById('countryCode');
+document.addEventListener('DOMContentLoaded', function () {
+    fetch('countries.json')
+        .then(response => response.json())
+        .then(data => {
+            if (Array.isArray(data)) {
+                const countryCodeSelect = document.getElementById('countryCode');
 
-            // Loop through the data and add options to the select element
-            data.forEach(item => {
-                const option = document.createElement('option');
-                option.value = item.dial_code;
-                option.text = `${item.flag} ${item.name} (${item.dial_code})`;
+                // Loop through the data and add options to the select element
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.dial_code;
 
-                // Add a class or style to the flag element
-                option.style.backgroundImage = `url(https://www.countryflags.com/flag-of-${item.name})`;
-                option.style.backgroundSize = 'contain';
-                option.style.paddingLeft = '30px';
+                    // Create a <span> element for the flag icon
+                    const flagIcon = document.createElement('i');
+                    flagIcon.className = `flag-icon flag-icon-${item.code.toLowerCase()}`;
 
-                countryCodeSelect.appendChild(option);
-            });
-        } else {
-            console.error('Invalid JSON format: data is not an array.');
-        }
-    })
-    .catch(error => {
-        console.error('Error fetching or parsing country codes:', error);
-    });
+                    // Append the flag <span> and the text to the option element
+                    option.appendChild(flagIcon);
+                    option.appendChild(document.createTextNode(`${item.name} (${item.dial_code})`));
+
+                    // Append the option to the select element
+                    countryCodeSelect.appendChild(option);
+                });
+            } else {
+                console.error('Invalid JSON format: data is not an array.');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching or parsing country codes:', error);
+        });
+});
 
 // Validation
 function initRecaptcha() {
@@ -80,8 +85,11 @@ document.getElementById('verifyCode').addEventListener('keydown', function (even
 
 window.sendCheck = function (event) {
     var number = document.getElementById('User_phone').value;
-    const toCheckNum = `60${number}`;
-    const PhoneNumber = `+60${number}`;
+    var code = document.getElementById('countryCode').value;
+    var woPlus = code.slice(1);
+
+    const toCheckNum = `${woPlus}${number}`;
+    const PhoneNumber = `${code}${number}`;
 
     if (number.trim() === '') {
         alert('Please enter a phone number.');

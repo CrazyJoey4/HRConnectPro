@@ -21,10 +21,9 @@
             </div>
             <div class="wrap">
                 <div id="sender">
-                    <span class="ip2location-flag-16 flag-square flag-us"></span>
                     <div class="phoneInput">
                         <div class="InputOption">
-                            <select name="countryCode" id="countryCode"></select>
+                            <select class="countryCode" name="countryCode" id="countryCode"></select>
                         </div>
                         <div class="InputText">
                             <input type="text" name="User_phone" id="User_phone" autocomplete="off" required>
