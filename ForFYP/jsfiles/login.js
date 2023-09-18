@@ -1,7 +1,7 @@
 // Import the functions
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore, collection, getDocs, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js"; // Add the necessary Firestore imports
+import { getFirestore, collection, getDocs, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -18,9 +18,34 @@ const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
 
-console.log("login.js is running");
-
 let isRecaptchaVerified = false;
+
+fetch('countries.json')
+    .then(response => response.json())
+    .then(data => {
+        if (Array.isArray(data)) {
+            const countryCodeSelect = document.getElementById('countryCode');
+
+            // Loop through the data and add options to the select element
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.dial_code;
+                option.text = `${item.flag} ${item.name} (${item.dial_code})`;
+
+                // Add a class or style to the flag element
+                option.style.backgroundImage = `url(https://www.countryflags.com/flag-of-${item.name})`;
+                option.style.backgroundSize = 'contain';
+                option.style.paddingLeft = '30px';
+
+                countryCodeSelect.appendChild(option);
+            });
+        } else {
+            console.error('Invalid JSON format: data is not an array.');
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching or parsing country codes:', error);
+    });
 
 // Validation
 function initRecaptcha() {
@@ -121,7 +146,6 @@ window.codeVerify = function (event) {
             console.log('OTP Verified');
 
             var uid = success.user.uid;
-            console.log(uid);
             localStorage.setItem('userId', uid);
 
             alert("User Verified! Welcome to HRConnect Pro");

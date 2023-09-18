@@ -68,8 +68,7 @@ window.update = function (event) {
         .then((querySnapshot) => {
             if (!querySnapshot.empty) {
                 querySnapshot.forEach((doc) => {
-                    const userDocRef = doc.ref;
-                    // Update the username field
+                    const userDocRef = doc.ref;                    
                     return updateDoc(userDocRef, { 
                         name: name,
                         gender: gender,
@@ -85,10 +84,10 @@ window.update = function (event) {
         })
         .then(() => {
             // Update successful
-            alert('Username updated successfully');
+            alert('User details updated successfully');
         })
         .catch((error) => {
             // Error occurred during update
-            alert('Error updating username:', error);
+            alert('Error updating :', error);
         });
 }

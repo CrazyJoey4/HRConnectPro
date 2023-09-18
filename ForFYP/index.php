@@ -21,15 +21,22 @@
             </div>
             <div class="wrap">
                 <div id="sender">
-                    <div class="InputText">
-                        <input type="text" name="User_phone" id="User_phone" autocomplete="off" required>
-                        <label>Phone Number</label>
+                    <span class="ip2location-flag-16 flag-square flag-us"></span>
+                    <div class="phoneInput">
+                        <div class="InputOption">
+                            <select name="countryCode" id="countryCode"></select>
+                        </div>
+                        <div class="InputText">
+                            <input type="text" name="User_phone" id="User_phone" autocomplete="off" required>
+                            <label>Phone Number</label>
+                        </div>
                     </div>
 
                     <div class="recaptcha" id="recaptcha-container"></div>
 
                     <div class="login-btn">
-                        <input type="button" name="Send" id="Send" value="Send" class="login" onclick="sendCheck(event)">
+                        <input type="button" name="Send" id="Send" value="Send" class="login"
+                            onclick="sendCheck(event)">
                     </div>
                 </div>
 
@@ -40,7 +47,8 @@
                     </div>
 
                     <div class="login-btn">
-                        <input type="button" name="Sign" id="Sign" value="Sign In" class="login" onclick="codeVerify(event)">
+                        <input type="button" name="Sign" id="Sign" value="Sign In" class="login"
+                            onclick="codeVerify(event)">
                     </div>
                 </div>
             </div>

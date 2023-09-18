@@ -85,6 +85,21 @@ body {
     pointer-events: none;
 }
 
+/* Phone Code */
+.iti__selected-flag {
+    font-size: 1rem;
+    color: #fff;
+}
+
+.iti__arrow {
+    font-size: 1rem;
+    color: #fff !important;
+}
+
+#User_phone::placeholder {
+    color: #999;
+}
+
 .recaptcha {
     display: flex;
     justify-content: center;
