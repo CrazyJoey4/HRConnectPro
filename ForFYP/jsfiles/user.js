@@ -88,7 +88,7 @@ window.update = function (event) {
     const confirmed = window.confirm('Please ensure the details are correct.\nAre you sure you want to update your details?');
 
     if (!confirmed) {
-        return; // If the user cancels, do nothing
+        return;
     }
 
     let gender;
@@ -134,7 +134,7 @@ window.update = function (event) {
                 throw new Error('User document does not exist');
             }
         })
-        .then(() => {            
+        .then(() => {
             alert('User details updated successfully');
 
             setTimeout(() => {
