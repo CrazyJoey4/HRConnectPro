@@ -134,8 +134,7 @@ window.update = function (event) {
                 throw new Error('User document does not exist');
             }
         })
-        .then(() => {
-            // Update successful
+        .then(() => {            
             alert('User details updated successfully');
 
             setTimeout(() => {
@@ -143,7 +142,6 @@ window.update = function (event) {
             }, 1000);
         })
         .catch((error) => {
-            // Error occurred during update
             alert('Error updating:', error);
         });
 }
