@@ -3,6 +3,12 @@
 
 <head>
     <title> Profile </title>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
     <link rel="icon" href="media/hr-icon.png">
 
     <?php
@@ -21,12 +27,22 @@
                 <div class="profile-wrap">
                     <div class="InputText">
                         <label>Name</label><br />
-                        <input type="text" name="name" id="name">
+                        <input type="text" name="name" id="name" autocomplete="off">
                     </div>
 
-                    <div class="InputText">
+                    <div class="InputText" id="genderInput">
                         <label>Gender</label><br />
-                        <input type="text" name="gender" id="gender">
+                        <input type="text" name="gender" id="gender" disabled>
+                    </div>
+
+                    <div class="option" id="genderOptions" style="text-align: left; display: none;">
+                        <label>Gender</label>
+                        <br>
+                        <input class="checkbox-option" type="radio" name="User_gender" id="Male" value="Male" />
+                        <label class="for-checkbox-option" for="Male">Male</label>
+
+                        <input class="checkbox-option" type="radio" name="User_gender" id="Female" value="Female" />
+                        <label class="for-checkbox-option" for="Female">Female</label>
                     </div>
 
                     <div class="InputText">
@@ -58,6 +74,17 @@
         </div>
     </div>
     <script type="module" src="jsfiles/user.js"></script>
+
+    <script>
+        $(function () {
+            $("#dob").datepicker({
+                dateFormat: "yy-mm-dd", // Set the desired date format
+                changeYear: true,      // Enable year dropdown
+                changeMonth: true,
+                yearRange: "1900:+0"  // Set the range of years (from 1900 to current year)
+            });
+        });
+    </script>
 </body>
 
 </html>

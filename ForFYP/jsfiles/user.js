@@ -32,11 +32,25 @@ document.addEventListener("DOMContentLoaded", function () {
                         const userData = doc.data();
                         // Display user data
                         document.getElementById('name').value = userData.name;
-                        document.getElementById('gender').value = userData.gender;
                         document.getElementById('dob').value = userData.dob;
                         document.getElementById('email').value = userData.email;
                         document.getElementById('address').value = userData.address;
                         document.getElementById('phoneNo').value = userData.phoneNo;
+
+                        const genderInput = document.getElementById('genderInput');
+                        const genderOptions = document.getElementById('genderOptions');
+
+                        const gender = userData.gender;
+                        if (gender) {
+                            // Gender exists
+                            document.getElementById('gender').value = gender;
+                            genderInput.style.display = 'block';
+                            genderOptions.style.display = 'none';
+                        } else {
+                            // Gender not exists
+                            genderInput.style.display = 'none';
+                            genderOptions.style.display = 'block';
+                        }
 
                         console.log('User document fetched');
                     });
@@ -47,16 +61,54 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch((error) => {
                 console.log('Error fetching user profile:', error);
             });
-    }
+    };
     displayProfile();
+});
+
+// Option Select
+document.addEventListener('DOMContentLoaded', function () {
+    const genderInput = document.getElementById('genderInput');
+    const genderOptions = document.getElementById('genderOptions');
+
+    const gender = document.getElementById('gender').value.trim();
+
+    if (gender === '') {
+        genderInput.style.display = 'none';
+        genderOptions.style.display = 'block';
+    } else {
+        genderInput.style.display = 'block';
+        genderOptions.style.display = 'none';
+    }
 });
 
 // Update Details
 window.update = function (event) {
     event.preventDefault();
 
+    const confirmed = window.confirm('Please ensure the details are correct.\nAre you sure you want to update your details?');
+
+    if (!confirmed) {
+        return; // If the user cancels, do nothing
+    }
+
+    let gender;
+
+    // Check if the gender input field is visible
+    const genderInput = document.getElementById('genderInput');
+    if (genderInput.style.display === 'block') {
+        gender = document.getElementById('gender').value;
+    } else {
+        // If the gender radio buttons are visible, get the selected value
+        const genderRadios = document.getElementsByName('User_gender');
+        for (const radio of genderRadios) {
+            if (radio.checked) {
+                gender = radio.value;
+                break;
+            }
+        }
+    }
+
     const name = document.getElementById('name').value;
-    const gender = document.getElementById('gender').value;
     const dob = document.getElementById('dob').value;
     const email = document.getElementById('email').value;
     const phoneNo = document.getElementById('phoneNo').value;
@@ -68,8 +120,8 @@ window.update = function (event) {
         .then((querySnapshot) => {
             if (!querySnapshot.empty) {
                 querySnapshot.forEach((doc) => {
-                    const userDocRef = doc.ref;                    
-                    return updateDoc(userDocRef, { 
+                    const userDocRef = doc.ref;
+                    return updateDoc(userDocRef, {
                         name: name,
                         gender: gender,
                         dob: dob,
@@ -85,9 +137,13 @@ window.update = function (event) {
         .then(() => {
             // Update successful
             alert('User details updated successfully');
+
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
         })
         .catch((error) => {
             // Error occurred during update
-            alert('Error updating :', error);
+            alert('Error updating:', error);
         });
 }

@@ -11,6 +11,9 @@
         integrity="sha512-Z0kTB03S7BU+JFU0nw9mjSBcRnZm2Bvm0tzOX9/OuOuz01XQfOpa0w/N9u6Jf2f1OAdegdIPWZ9nIZZ+keEvBw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
     <link rel="stylesheet" href="./cssfiles/main.css">
     <script type="module" src="jsfiles/auth.js">
         window.addEventListener('DOMContentLoaded', function () {
@@ -62,11 +65,15 @@
                 <li><a href="settingPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'settingPage.php')
                     echo 'class="active"'; ?>><span class="fa fa-cog"></span> Settings </a></li>
 
-
             </ul>
         </div>
 
         <div class="topnav">
+            <div class="profiletxt">
+                <h5>Test</h5>
+                <h5>Test</h5>
+            </div>
+
             <div class="profilepic">
                 <img src="media/hr-icon.png" alt="ProfilePicture" width="50px">
             </div>

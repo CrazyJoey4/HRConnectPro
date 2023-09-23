@@ -1,6 +1,7 @@
 // Import the functions
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -13,14 +14,17 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth();
+const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth(firebaseApp);
+const firestore = getFirestore(firebaseApp);
+
+var userId = localStorage.getItem('userId');
 
 checkLoggedIn();
+getPosition();
 
 // Check if the user is logged in
 function checkLoggedIn() {
-    var userId = localStorage.getItem('userId');
     console.log(userId);
     if (!userId) {
         // User is not logged in, redirect to login page or perform other actions
@@ -50,3 +54,23 @@ signout.addEventListener('click', () => {
             });
     }
 });
+
+// For Get Position
+function getPosition() {
+    const usersRef = collection(firestore, 'users');
+    const q = query(usersRef, where('uid', '==', userId));
+
+    getDocs(q)
+        .then((querySnapshot) => {
+            if (!querySnapshot.empty) {
+                querySnapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    console.log(userData.pos_id);
+                });
+            } else {
+                console.log('User document does not exist');
+            }
+        }).catch((error) => {
+            console.log('Error fetching position:', error);
+        });
+}
