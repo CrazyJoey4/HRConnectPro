@@ -18,6 +18,7 @@ const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
 
 var userId = localStorage.getItem('userId');
+const maxLength = 17;
 
 // Display User Information
 document.addEventListener("DOMContentLoaded", function () {
@@ -36,6 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         document.getElementById('email').value = userData.email;
                         document.getElementById('address').value = userData.address;
                         document.getElementById('phoneNo').value = userData.phoneNo;
+                        document.getElementById('bankNo').value = userData.bankNo;
 
                         const genderInput = document.getElementById('genderInput');
                         const genderOptions = document.getElementById('genderOptions');
@@ -50,6 +52,17 @@ document.addEventListener("DOMContentLoaded", function () {
                             // Gender not exists
                             genderInput.style.display = 'none';
                             genderOptions.style.display = 'block';
+                        }
+
+                        const maritalStatus = userData.marital_status;
+                        if (maritalStatus) {
+                            // Marital status exists
+                            const maritalOption = document.getElementsByName('User_marital');
+                            maritalOption.forEach((option) => {
+                                if (option.value === maritalStatus) {
+                                    option.checked = true;
+                                }
+                            });
                         }
 
                         console.log('User document fetched');
@@ -81,9 +94,37 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+// For format bank account number
+function formatBankNumber(input) {
+    const numericValue = input.value.replace(/\D/g, '');
+
+    if (numericValue.length > maxLength) {
+        input.value = numericValue.slice(0, maxLength);
+    }
+}
+
+// Validate bankNo input field while keyup
+const bankNoInput = document.getElementById('bankNo');
+
+bankNoInput.addEventListener('keyup', function () {
+    formatBankNumber(this);
+});
+
 // Update Details
 window.update = function (event) {
     event.preventDefault();
+
+    const name = document.getElementById('name').value;
+    const dob = document.getElementById('dob').value;
+    const email = document.getElementById('email').value;
+    const address = document.getElementById('address').value;
+    const phoneNo = document.getElementById('phoneNo').value;
+    const bankNo = document.getElementById('bankNo').value;
+
+    if (name == "" || dob == "" || email == "" || address == "" || phoneNo == "" || bankNo == "") {
+        alert('Please fill in all required fields.');
+        return;
+    }
 
     const confirmed = window.confirm('Please ensure the details are correct.\nAre you sure you want to update your details?');
 
@@ -92,15 +133,16 @@ window.update = function (event) {
     }
 
     let gender;
+    let marital_status;
+    let bank_type;
 
-    // Check if the gender input field is visible
+    // For Gender
     const genderInput = document.getElementById('genderInput');
     if (genderInput.style.display === 'block') {
         gender = document.getElementById('gender').value;
     } else {
-        // If the gender radio buttons are visible, get the selected value
-        const genderRadios = document.getElementsByName('User_gender');
-        for (const radio of genderRadios) {
+        const genderChosen = document.getElementsByName('User_gender');
+        for (const radio of genderChosen) {
             if (radio.checked) {
                 gender = radio.value;
                 break;
@@ -108,10 +150,23 @@ window.update = function (event) {
         }
     }
 
-    const name = document.getElementById('name').value;
-    const dob = document.getElementById('dob').value;
-    const email = document.getElementById('email').value;
-    const phoneNo = document.getElementById('phoneNo').value;
+    // For Marital Status
+    const statusChosen = document.getElementsByName('User_marital');
+    for (const radio of statusChosen) {
+        if (radio.checked) {
+            marital_status = radio.value;
+            break;
+        }
+    }
+
+    // For Bank Type
+    const bankChosen = document.getElementsByName('bankType');
+    for (const radio of bankChosen) {
+        if (radio.checked) {
+            bank_type = radio.value;
+            break;
+        }
+    }
 
     const usersRef = collection(firestore, 'users');
     const q = query(usersRef, where('uid', '==', userId));
@@ -126,7 +181,11 @@ window.update = function (event) {
                         gender: gender,
                         dob: dob,
                         email: email,
+                        address: address,
                         phoneNo: phoneNo,
+                        bankType: bank_type,
+                        bankNo: bankNo,
+                        marital_status: marital_status,
                     });
                 });
             } else {

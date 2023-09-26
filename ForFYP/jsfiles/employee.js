@@ -55,8 +55,10 @@ document.addEventListener("DOMContentLoaded", function () {
                         <td>${user.phoneNo}</td>
                         <td>${posName}</td>
                         <td>${depName}</td>
-                        <td><button onclick="editUser('${doc.uid}')">Edit</button></td>
+                        <td><button onclick="editUser('${userId}')">Edit</button></td>
                     `;
+
+                console.log(userId);
             } else {
                 console.log("Cannot fetch");
             }
@@ -64,10 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-
 // For Edit button
 function editUser(userId) {
-    // Implement code to populate the form fields for editing the selected user
-    // You can use the "userId" to fetch user details from the database
-    // and populate the form fields in the overlay form.
+    console.log(userId);
 }

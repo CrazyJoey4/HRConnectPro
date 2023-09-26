@@ -7,7 +7,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.3.0/crypto-js.js"></script>
 
     <link rel="icon" href="media/hr-icon.png">
 
@@ -62,7 +62,39 @@
 
                     <div class="InputText">
                         <label>Phone Number</label><br />
-                        <input type="text" name="phoneNo" id="phoneNo">
+                        <input type="number" name="phoneNo" id="phoneNo">
+                    </div>
+
+                    <div class="forBank">
+                        <div class="InputOption">
+                            <select class="bankType" name="bankType" id="bankType"></select>
+                        </div>
+
+                        <div class="InputText">
+                            <label>Bank Number</label><br />
+                            <input type="number" name="bankNo" id="bankNo">
+                        </div>
+                    </div>
+
+                    <div class="option" id="maritalOptions" style="text-align: left;">
+                        <label>Marital Status</label>
+                        <br>
+                        <input class="checkbox-option" type="radio" name="User_marital" id="Single" value="Single" />
+                        <label class="for-checkbox-option" for="Single">Single</label>
+
+                        <input class="checkbox-option" type="radio" name="User_marital" id="Married" value="Married" />
+                        <label class="for-checkbox-option" for="Married">Married</label>
+
+                        <input class="checkbox-option" type="radio" name="User_marital" id="Divorced"
+                            value="Divorced" />
+                        <label class="for-checkbox-option" for="Divorced">Divorced</label>
+
+                        <input class="checkbox-option" type="radio" name="User_marital" id="Separated"
+                            value="Separated" />
+                        <label class="for-checkbox-option" for="Separated">Separated</label>
+
+                        <input class="checkbox-option" type="radio" name="User_marital" id="Widowed" value="Widowed" />
+                        <label class="for-checkbox-option" for="Widowed">Widowed</label>
                     </div>
 
                     <div class="update-btn">
@@ -78,11 +110,43 @@
     <script>
         $(function () {
             $("#dob").datepicker({
-                dateFormat: "yy-mm-dd", // Set the desired date format
-                changeYear: true,      // Enable year dropdown
+                dateFormat: "yy-mm-dd",
+                changeYear: true,
                 changeMonth: true,
-                yearRange: "1900:+0"  // Set the range of years (from 1900 to current year)
+                yearRange: "1900:+0"
             });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('malaysiaBank.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        const bankTypeSelect = document.getElementById('bankType');
+
+                        // Loop through the data and add options to the select element
+                        data.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.name;
+
+                            option.appendChild(document.createTextNode(`${item.name}`));
+
+                            bankTypeSelect.appendChild(option);
+                        });
+                    } else {
+                        console.error('Invalid JSON format: data is not an array.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching or parsing country codes:', error);
+                });
         });
     </script>
 </body>
