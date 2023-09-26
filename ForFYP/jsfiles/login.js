@@ -117,6 +117,9 @@ window.sendCheck = function (event) {
                 alert("User Unauthorized.\nPlease reach to Admin for the issue.");
             }
             else {
+                const uid = Snapshot.docs[0].data().uid;
+                localStorage.setItem('userId', uid);
+
                 signInWithPhoneNumber(auth, PhoneNumber, window.recaptchaVerifier)
                     .then(function (confirmationResult) {
                         window.confirmationResult = confirmationResult;
@@ -152,9 +155,6 @@ window.codeVerify = function (event) {
     window.confirmationResult.confirm(code)
         .then(function (success) {
             console.log('OTP Verified');
-
-            var uid = success.user.uid;
-            localStorage.setItem('userId', uid);
 
             alert("User Verified! Welcome to HRConnect Pro");
             window.location.href = "dashboard.php";

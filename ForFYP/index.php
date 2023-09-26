@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.9/css/unicons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css">
 
-    <link rel="stylesheet" href="cssfiles/style.css">
+    <link rel="stylesheet" href="cssfiles/loginStyle.css">
     <link rel="icon" href="media/hr-icon.png">
 
     <title>HRConnect Pro</title>

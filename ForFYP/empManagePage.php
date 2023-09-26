@@ -18,7 +18,7 @@
         </div>
 
         <div class="table-block">
-            <table>
+            <table class="userTable" id="userTable">
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
@@ -26,9 +26,8 @@
                     <th>Phone Number</th>
                     <th>Position</th>
                     <th>Department</th>
-                    <th width='10%' colspan='2'>Action</th>
+                    <th colspan='2'>Action</th>
                 </tr>
-
 
             </table>
         </div>
@@ -69,14 +68,12 @@
                     <input type="text" name="phoneNo" id="phoneNo">
                 </div>
 
-                <div class="overlay-add-btn">
-                    <input type="submit" name="Update" id="Update" value="Update Profile" class="addEmp"
+                <div class="addEmp-btn">
+                    <input type="submit" name="Add" id="Add" value="Add Employee" class="addEmp"
                         onclick="update(event)">
 
                     <button type="reset" class="cancelbtn" onclick="off()">Cancel</button>
                 </div>
-
-
             </form>
         </div>
     </div>
@@ -90,6 +87,10 @@
         function off() {
             document.getElementById("overlay").style.display = "none";
         }
+
+        window.addEventListener('DOMContentLoaded', function () {
+            fetchUserDetails();
+        });
     </script>
 </body>
 
