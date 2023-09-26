@@ -66,6 +66,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+
+
 // For Edit button
 function editUser(userId) {
     console.log(userId);

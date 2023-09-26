@@ -89,7 +89,14 @@ body {
 }
 
 /* Phone Code */
+.phoneInput {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
 .countryCode {
+    width: 100%;
     font-size: 1rem;
     background-color: transparent;
     color: #c0d8f6;

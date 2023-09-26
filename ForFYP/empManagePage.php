@@ -38,39 +38,26 @@
 
                 <hr style="border-bottom:2px solid grey;">
 
-                <div class="InputText">
+                <div class="InputText">                    
+                    <input type="text" name="name" id="name" autocomplete="off" required>
                     <label>Name</label><br />
-                    <input type="text" name="name" id="name" autocomplete="off">
                 </div>
 
-                <div class="InputText">
-                    <label>Gender</label><br />
-                    <input type="text" name="gender" id="gender">
-                </div>
-
-                <div class="InputText">
-                    <label>Birth Date</label><br />
-                    <input type="text" name="dob" id="dob">
-                </div>
-
-                <div class="InputText">
-                    <label>Email</label><br />
-                    <input type="text" name="email" id="email">
-                </div>
-
-                <div class="InputText">
-                    <label>Address</label><br />
-                    <input type="text" name="address" id="address">
-                </div>
-
-                <div class="InputText">
+                <div class="InputText">                    
+                    <input type="text" name="phoneNo" id="phoneNo" autocomplete="off" required>
                     <label>Phone Number</label><br />
-                    <input type="text" name="phoneNo" id="phoneNo">
                 </div>
+
+                <div class="InputText">                    
+                    <input type="text" name="email" id="email" autocomplete="off" required>
+                    <label>Email</label><br />
+                </div>
+
+                <br />
 
                 <div class="addEmp-btn">
                     <input type="submit" name="Add" id="Add" value="Add Employee" class="addEmp"
-                        onclick="update(event)">
+                        onclick="addEmp(event)">
 
                     <button type="reset" class="cancelbtn" onclick="off()">Cancel</button>
                 </div>
