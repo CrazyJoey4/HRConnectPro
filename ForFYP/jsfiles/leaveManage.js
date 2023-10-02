@@ -22,15 +22,13 @@ var userId = localStorage.getItem('userId');
 // Fetch Employee details
 document.addEventListener("DOMContentLoaded", async function () {
     window.fetchUserDetails = async function () {
-        const employeeTable = document.getElementById('userTable');
+        const employeeTable = document.getElementById('leaveTable');
 
-        const usersRef = collection(firestore, 'users');
-        const querySnapshot = await getDocs(usersRef);
+        const leaveRef = collection(firestore, 'leave');
+        const querySnapshot = await getDocs(leaveRef);
 
         querySnapshot.forEach(async (doc) => {
-            const user = doc.data();
-            const depID = user.dep_id;
-            const posID = user.pos_id;
+            const leave = doc.data();
 
             const depRef = collection(firestore, 'department');
             const q = query(depRef, where('dep_id', '==', depID));
@@ -50,7 +48,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const newRow = employeeTable.insertRow();
                 newRow.innerHTML = `
                         <td>${user.uid}</td>
-                        <td id="name">${user.name}</td>
+                        <td>${user.name}</td>
                         <td>${user.email}</td>
                         <td>${user.phoneNo}</td>
                         <td>${posName}</td>
@@ -228,7 +226,7 @@ function validate_email(email) {
 }
 
 function validate_phone(phoneNumber) {
-    const phonePattern = /^\d{9,10}$/;
+    const phonePattern = /^\d{10,11}$/;
     return phonePattern.test(phoneNumber);
 }
 

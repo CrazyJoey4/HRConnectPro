@@ -67,7 +67,9 @@
 
                     <div class="forBank">
                         <div class="InputOption">
-                            <select class="bankType" name="bankType" id="bankType"></select>
+                            <select class="bankType" name="bankType" id="bankType">
+                                <option>Select Bank Type</option>
+                            </select>
                         </div>
 
                         <div class="InputText">
@@ -76,25 +78,17 @@
                         </div>
                     </div>
 
-                    <div class="option" id="maritalOptions" style="text-align: left;">
+                    <div class="InputText InputOption">
                         <label>Marital Status</label>
                         <br>
-                        <input class="checkbox-option" type="radio" name="User_marital" id="Single" value="Single" />
-                        <label class="for-checkbox-option" for="Single">Single</label>
-
-                        <input class="checkbox-option" type="radio" name="User_marital" id="Married" value="Married" />
-                        <label class="for-checkbox-option" for="Married">Married</label>
-
-                        <input class="checkbox-option" type="radio" name="User_marital" id="Divorced"
-                            value="Divorced" />
-                        <label class="for-checkbox-option" for="Divorced">Divorced</label>
-
-                        <input class="checkbox-option" type="radio" name="User_marital" id="Separated"
-                            value="Separated" />
-                        <label class="for-checkbox-option" for="Separated">Separated</label>
-
-                        <input class="checkbox-option" type="radio" name="User_marital" id="Widowed" value="Widowed" />
-                        <label class="for-checkbox-option" for="Widowed">Widowed</label>
+                        <select class="maritalOptions" name="maritalOptions" id="maritalOptions">
+                            <option>Select Marital Status</option>
+                            <option value="1">Single</option>
+                            <option value="2">Married</option>
+                            <option value="3">Divorced</option>
+                            <option value="4">Separated</option>
+                            <option value="5">Widowed</option>
+                        </select>
                     </div>
 
                     <div class="update-btn">

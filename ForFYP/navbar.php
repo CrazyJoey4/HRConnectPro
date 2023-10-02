@@ -70,8 +70,7 @@
 
         <div class="topnav">
             <div class="profiletxt">
-                <h5>Test</h5>
-                <h5>Test</h5>
+                <h5 class="user_name" id="user_name"></h5>
             </div>
 
             <div class="profilepic">

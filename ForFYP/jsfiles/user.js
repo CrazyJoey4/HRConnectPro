@@ -120,6 +120,8 @@ window.update = function (event) {
     const address = document.getElementById('address').value;
     const phoneNo = document.getElementById('phoneNo').value;
     const bankNo = document.getElementById('bankNo').value;
+    const bankType = document.getElementById('bankType').value;
+    const selectedMarital = document.getElementById('bankNo').value;
 
     if (name == "" || dob == "" || email == "" || address == "" || phoneNo == "" || bankNo == "") {
         alert('Please fill in all required fields.');
@@ -133,8 +135,6 @@ window.update = function (event) {
     }
 
     let gender;
-    let marital_status;
-    let bank_type;
 
     // For Gender
     const genderInput = document.getElementById('genderInput');
@@ -147,24 +147,6 @@ window.update = function (event) {
                 gender = radio.value;
                 break;
             }
-        }
-    }
-
-    // For Marital Status
-    const statusChosen = document.getElementsByName('User_marital');
-    for (const radio of statusChosen) {
-        if (radio.checked) {
-            marital_status = radio.value;
-            break;
-        }
-    }
-
-    // For Bank Type
-    const bankChosen = document.getElementsByName('bankType');
-    for (const radio of bankChosen) {
-        if (radio.checked) {
-            bank_type = radio.value;
-            break;
         }
     }
 
@@ -183,9 +165,9 @@ window.update = function (event) {
                         email: email,
                         address: address,
                         phoneNo: phoneNo,
-                        bankType: bank_type,
+                        bankType: bankType,
                         bankNo: bankNo,
-                        marital_status: marital_status,
+                        marital_status: selectedMarital,
                     });
                 });
             } else {

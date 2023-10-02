@@ -21,7 +21,7 @@ const firestore = getFirestore(firebaseApp);
 var userId = localStorage.getItem('userId');
 
 checkLoggedIn();
-getPosition();
+getName();
 
 // Check if the user is logged in
 function checkLoggedIn() {
@@ -55,17 +55,19 @@ signout.addEventListener('click', () => {
     }
 });
 
-// For Get Position
-function getPosition() {
+// For Get Name
+function getName() {
     const usersRef = collection(firestore, 'users');
     const q = query(usersRef, where('uid', '==', userId));
+    const UserName = document.getElementById('user_name');
 
     getDocs(q)
         .then((querySnapshot) => {
             if (!querySnapshot.empty) {
                 querySnapshot.forEach((doc) => {
                     const userData = doc.data();
-                    console.log(userData.pos_id);
+                    console.log(userData.name);
+                    UserName.textContent = userData.name;
                 });
             } else {
                 console.log('User document does not exist');

@@ -38,22 +38,37 @@
 
                 <hr style="border-bottom:2px solid grey;">
 
-                <div class="InputText">                    
+                <div class="InputText">
                     <input type="text" name="name" id="name" autocomplete="off" required>
                     <label>Name</label><br />
                 </div>
 
-                <div class="InputText">                    
+                <div class="InputText">
                     <input type="text" name="phoneNo" id="phoneNo" autocomplete="off" required>
-                    <label>Phone Number</label><br />
+                    <label>Phone Number (+60)</label><br />
                 </div>
 
-                <div class="InputText">                    
+                <div class="InputText">
                     <input type="text" name="email" id="email" autocomplete="off" required>
                     <label>Email</label><br />
                 </div>
 
-                <br />
+                <div class="InputOption">
+                    <select class="depOption" name="depOption" id="depOption" required>
+                        <option value="">Select Department</option>
+                    </select>
+                </div>
+
+                <div class="InputOption">
+                    <select class="posOption" name="posOption" id="posOption" required>
+                        <option value="">Select Position</option>
+                    </select>
+                </div>
+
+                <div class="InputText">
+                    <input type="text" name="salary" id="salary" autocomplete="off" required>
+                    <label>Salary</label><br />
+                </div>
 
                 <div class="addEmp-btn">
                     <input type="submit" name="Add" id="Add" value="Add Employee" class="addEmp"
