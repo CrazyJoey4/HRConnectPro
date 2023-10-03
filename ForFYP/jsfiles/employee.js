@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const employeeTable = document.getElementById('userTable');
 
         const usersRef = collection(firestore, 'users');
-        const querySnapshot = await getDocs(usersRef);
+        const querySnapshot = await getDocs(query(usersRef, orderBy('uid', 'asc')));
 
         querySnapshot.forEach(async (doc) => {
             const user = doc.data();
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const newRow = employeeTable.insertRow();
                 newRow.innerHTML = `
                         <td>${user.uid}</td>
-                        <td id="name">${user.name}</td>
+                        <td id="nameCol">${user.name}</td>
                         <td>${user.email}</td>
                         <td>${user.phoneNo}</td>
                         <td>${posName}</td>
@@ -229,7 +229,7 @@ window.addEmp = async function (event) {
             alert("Error adding employee: ", error);
         });
 
-    // Clear the form and close the overlay
+    // Clear form
     document.getElementById("overlay").style.display = "none";
     document.getElementById("name").value = "";
     document.getElementById("email").value = "";
@@ -259,6 +259,7 @@ window.editUser = async function (userId) {
                     document.getElementById("editSalary").value = userData.salary;
 
                     document.getElementById("editOverlay").style.display = "block";
+                    document.getElementById("overlayBg").style.display = "block";
                 });
             } else {
                 console.log('User document does not exist');
@@ -302,6 +303,7 @@ window.saveUserChanges = async function () {
                         .then(() => {
                             console.log("User details updated successfully");
                             document.getElementById("editOverlay").style.display = "none";
+                            document.getElementById("overlayBg").style.display = "none";
 
                             toRefresh();
                         })
@@ -350,7 +352,7 @@ window.deleteUser = async function (userId) {
     }
 }
 
-
+// For Search
 function filterTable() {
     const input = document.getElementById("searchInput");
     const filter = input.value.toUpperCase();

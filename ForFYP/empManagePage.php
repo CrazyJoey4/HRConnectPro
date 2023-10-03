@@ -22,19 +22,21 @@
         </div>
 
         <div class="table-block">
-            <table class="userTable" id="userTable">
+            <table class="detailsTable userTable" id="userTable">
                 <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Contact</th>
-                    <th>Position</th>
-                    <th>Department</th>
+                    <th class="idCol">ID</th>
+                    <th class="nameCol">Name</th>
+                    <th class="emailCol">Email</th>
+                    <th class="contactCol">Contact</th>
+                    <th class="posCol">Position</th>
+                    <th class="depCol">Department</th>
                     <th colspan='2'>Action</th>
                 </tr>
 
             </table>
         </div>
+
+        <div class="overlay-bg" id="overlayBg"></div>
 
         <div id="overlay" class="overlay">
             <form>
@@ -84,8 +86,8 @@
                     <label>Salary</label><br />
                 </div>
 
-                <div class="addEmp-btn">
-                    <input type="submit" name="Add" id="Add" value="Add Employee" class="addEmp"
+                <div class="addBtn-btn">
+                    <input type="submit" name="Add" id="Add" value="Add Employee" class="addBtn"
                         onclick="addEmp(event)">
 
                     <button type="reset" class="cancelbtn" onclick="off()">Cancel</button>
@@ -99,9 +101,8 @@
 
                 <hr style="border-bottom:2px solid grey;">
 
-                <div class="InputText" style="display:none">
+                <div style="display:none">
                     <input type="text" name="empID" id="empID" readonly>
-                    <label>ID</label><br />
                 </div>
 
                 <div class="InputText">
@@ -133,8 +134,8 @@
                     <label>Salary</label><br />
                 </div>
 
-                <div class="addEmp-btn">
-                    <input type="button" name="Save" id="editSave" value="Save Changes" class="addEmp"
+                <div class="addBtn-btn">
+                    <input type="button" name="Save" id="editSave" value="Save Changes" class="addBtn"
                         onclick="saveUserChanges()">
                     <button type="button" class="cancelbtn" onclick="closeEditOverlay()">Cancel</button>
                 </div>
@@ -147,10 +148,12 @@
     <script type="module" src="jsfiles/employee.js"></script>
     <script>
         function on() {
+            document.getElementById("overlayBg").style.display = "block";
             document.getElementById("overlay").style.display = "block";
         }
 
         function off() {
+            document.getElementById("overlayBg").style.display = "none";
             document.getElementById("overlay").style.display = "none";
         }
 
@@ -160,6 +163,7 @@
 
         function closeEditOverlay() {
             document.getElementById("editOverlay").style.display = "none";
+            document.getElementById("overlayBg").style.display = "none";
         }
     </script>
 </body>
