@@ -66,7 +66,6 @@ function getName() {
             if (!querySnapshot.empty) {
                 querySnapshot.forEach((doc) => {
                     const userData = doc.data();
-                    console.log(userData.name);
                     UserName.textContent = userData.name;
                 });
             } else {

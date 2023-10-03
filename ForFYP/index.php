@@ -22,8 +22,8 @@
             <div class="wrap">
                 <div id="sender">
                     <div class="phoneInput">
-                        <div class="InputOption">
-                            <select class="countryCode" name="countryCode" id="countryCode"></select>
+                        <div class="InputText phoneCode">
+                            <input type="text" name="countryCode" id="countryCode" value="+60" readonly>
                         </div>
                         <div class="InputText">
                             <input type="text" name="User_phone" id="User_phone" autocomplete="off" required>

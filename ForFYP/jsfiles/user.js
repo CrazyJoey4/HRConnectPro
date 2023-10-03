@@ -38,34 +38,32 @@ document.addEventListener("DOMContentLoaded", function () {
                         document.getElementById('address').value = userData.address;
                         document.getElementById('phoneNo').value = userData.phoneNo;
                         document.getElementById('bankNo').value = userData.bankNo;
+                        document.getElementById('bankType').value = userData.bankType;
 
                         const genderInput = document.getElementById('genderInput');
                         const genderOptions = document.getElementById('genderOptions');
 
                         const gender = userData.gender;
                         if (gender) {
-                            // Gender exists
                             document.getElementById('gender').value = gender;
                             genderInput.style.display = 'block';
                             genderOptions.style.display = 'none';
                         } else {
-                            // Gender not exists
                             genderInput.style.display = 'none';
                             genderOptions.style.display = 'block';
                         }
 
-                        const maritalStatus = userData.marital_status;
-                        if (maritalStatus) {
-                            // Marital status exists
-                            const maritalOption = document.getElementsByName('User_marital');
-                            maritalOption.forEach((option) => {
-                                if (option.value === maritalStatus) {
-                                    option.checked = true;
-                                }
-                            });
+                        const selectedbankType = userData.bankType;
+                        if (selectedbankType) {
+                            const selectbankType = document.getElementById('bankType');
+                            selectbankType.value = selectedbankType;
                         }
 
-                        console.log('User document fetched');
+                        const maritalStatus = userData.marital_status;
+                        if (maritalStatus) {
+                            const maritalOptions = document.getElementById('maritalOptions');
+                            maritalOptions.value = maritalStatus;
+                        }
                     });
                 } else {
                     console.log('User document does not exist');
@@ -121,9 +119,9 @@ window.update = function (event) {
     const phoneNo = document.getElementById('phoneNo').value;
     const bankNo = document.getElementById('bankNo').value;
     const bankType = document.getElementById('bankType').value;
-    const selectedMarital = document.getElementById('bankNo').value;
+    const selectedMarital = document.getElementById('maritalOptions').value;
 
-    if (name == "" || dob == "" || email == "" || address == "" || phoneNo == "" || bankNo == "") {
+    if (name == "" || dob == "" || email == "" || address == "" || phoneNo == "" || bankNo == "" || bankType == "" || selectedMarital == "") {
         alert('Please fill in all required fields.');
         return;
     }

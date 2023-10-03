@@ -55,10 +55,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                         <td>${user.phoneNo}</td>
                         <td>${posName}</td>
                         <td>${depName}</td>
-                        <td><button onclick="editUser('${userId}')">Edit</button></td>
+                        <td class="actioncol" id="actioncol1"><button class="editbtn" onclick="editUser('${user.uid}')"><i class='material-icons'>edit</i></button></td>
+                        <td class="actioncol" id="actioncol2"><button class="editbtn" onclick="deleteUser('${user.uid}')"><i class='material-icons'>delete</i></button></td>
                     `;
-
-                console.log(userId);
             } else {
                 console.log("Cannot fetch");
             }
@@ -69,6 +68,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 // For fetching departments
 async function generateDep() {
     const depSelect = document.getElementById("depOption");
+    const editdepSelect = document.getElementById("editDepOption");
 
     const depRef = collection(firestore, 'department');
     const querySnapshot = await getDocs(depRef);
@@ -78,32 +78,44 @@ async function generateDep() {
         option.value = doc.data().dep_id;
         option.text = doc.data().dep_name;
         depSelect.appendChild(option);
+
+        const editOption = document.createElement("option");
+        editOption.value = doc.data().dep_id;
+        editOption.text = doc.data().dep_name;
+        editdepSelect.appendChild(editOption);
     });
 }
 
 // For fetching positions
-function generatePos(selectedDep) {
-    console.log(selectedDep);
+async function generatePos(selectedDep) {
     const posSelect = document.getElementById("posOption");
+    const editPosSelect = document.getElementById("editPosOption");
+
     posSelect.innerHTML = "<option>Select Position</option>";
+    editPosSelect.innerHTML = "<option>Select Position</option>";
 
     const positionsRef = collection(firestore, "positions");
     const q = query(positionsRef, where("dep_id", "==", selectedDep));
 
-    getDocs(q)
-        .then((Snapshot) => {
-            if (!Snapshot.empty) {
-                Snapshot.forEach((doc) => {
-                    const posData = doc.data();
-                    const option = document.createElement("option");
-                    option.value = posData.pos_id;
-                    option.text = posData.pos_desc;
-                    posSelect.appendChild(option);
-                })
-            }
-        }).catch((error) => {
-            console.error("Error getting positions: ", error);
-        });
+    try {
+        const Snapshot = await getDocs(q);
+        if (!Snapshot.empty) {
+            Snapshot.forEach((doc) => {
+                const posData = doc.data();
+                const option = document.createElement("option");
+                option.value = posData.pos_id;
+                option.text = posData.pos_desc;
+                posSelect.appendChild(option);
+
+                const editOption = document.createElement("option");
+                editOption.value = posData.pos_id;
+                editOption.text = posData.pos_desc;
+                editPosSelect.appendChild(editOption);
+            });
+        }
+    } catch (error) {
+        console.error("Error getting positions: ", error);
+    }
 }
 
 const depInput = document.getElementById('depOption');
@@ -111,8 +123,21 @@ depInput.addEventListener('change', function () {
     handleDepartmentChange();
 });
 
+const editdepInput = document.getElementById('editDepOption');
+editdepInput.addEventListener('change', function () {
+    handleDepartmentChange2();
+});
+
+// For generate position
 function handleDepartmentChange() {
     const depSelect = document.getElementById("depOption");
+    const selectedDep = depSelect.value;
+
+    generatePos(selectedDep);
+}
+
+function handleDepartmentChange2() {
+    const depSelect = document.getElementById("editDepOption");
     const selectedDep = depSelect.value;
 
     generatePos(selectedDep);
@@ -142,47 +167,51 @@ window.addEmp = async function (event) {
     event.preventDefault();
 
     // Get employee details from the form
-    const name = document.getElementById("name").value;
+    const name = document.getElementById("UserName").value;
     const email = document.getElementById("email").value;
+    const constemail = document.getElementById("constEmail").value;
+    const countryCode = document.getElementById("countryCode").value;
     const phoneNo = document.getElementById("phoneNo").value;
     const salary = document.getElementById("salary").value;
 
     const selectedDep = document.getElementById("depOption").value;
     const selectedPos = document.getElementById("posOption").value;
 
-    // Validate the email field
-    if (name == "" || email == "" || phoneNo == "" || selectedDep === "" || selectedPos === "" || salary === "") {
+    // name = name.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+
+    // Validate fields
+    if (name == "" || email == "" || phoneNo == "" || selectedDep == "" || selectedPos == "" || salary == "") {
         alert('Please enter all fields and select a department and position !');
         return;
     }
+
+    var woPlus = countryCode.slice(1);
 
     if (validate_phone(phoneNo) == false) {
         alert('Please enter a valid phone number!');
         return;
     }
 
-    if (validate_email(email) == false) {
-        alert('Please enter a valid email!');
-        return;
-    }
-
     const userID = await generateNewUID();
+    const finalPhone = `${woPlus}${phoneNo}`
     const currentDate = new Date().toISOString().split('T')[0];
+    const finalEmail = `${email}${constemail}`;
 
-    // Add employee data to Firestore
+    console.log(name);
+
     addDoc(collection(firestore, "users"), {
         name: name,
-        email: email,
-        phoneNo: phoneNo,
+        email: finalEmail,
+        phoneNo: finalPhone,
         salary: salary,
         dep_id: selectedDep,
         pos_id: selectedPos,
 
         uid: userID,
         hire_date: currentDate,
+
         emp_status_id: "1",
         leave_balance: "",
-
         gender: "",
         dob: "",
         address: "",
@@ -191,8 +220,9 @@ window.addEmp = async function (event) {
         marital_status: "",
     })
         .then(function (docRef) {
-            console.log("Employee added with ID: ", docRef.id);
-            alert("Employee added with ID: ", docRef.id);
+            alert("Employee added ", docRef.uid);
+
+            toRefresh();
         })
         .catch(function (error) {
             console.error("Error adding employee: ", error);
@@ -206,26 +236,147 @@ window.addEmp = async function (event) {
     document.getElementById("phoneNo").value = "";
     document.getElementById("salary").value = "";
 
-    document.getElementById("depOption").value = "<option>Select Department</option>";
-    document.getElementById("posOption").value = "<option>Select Position</option>";
+    document.getElementById("depOption").value = "<option value=''>Select Department</option>";
+    document.getElementById("posOption").value = "<option value=''>Select Position</option>";
 }
 
 
 
 // For Edit button
-function editUser(userId) {
-    console.log(userId);
+window.editUser = async function (userId) {
+    const usersRef = collection(firestore, 'users');
+    const q = query(usersRef, where('uid', '==', userId));
+
+    getDocs(q)
+        .then((querySnapshot) => {
+            if (!querySnapshot.empty) {
+                querySnapshot.forEach((doc) => {
+                    const userData = doc.data();
+
+                    document.getElementById("empID").value = userData.uid;
+                    document.getElementById("editName").value = userData.name;
+                    document.getElementById("editEmail").value = userData.email;
+                    document.getElementById("editSalary").value = userData.salary;
+
+                    document.getElementById("editOverlay").style.display = "block";
+                });
+            } else {
+                console.log('User document does not exist');
+            }
+        })
+        .catch((error) => {
+            console.log('Error fetching user profile:', error);
+        });
 }
 
-// Validate Functions
-function validate_email(email) {
-    var expression = /^[^@]+@\w+(\.\w+)+\w$/;
-    if (expression.test(email) == true) {
-        return true;
-    } else {
-        return false;
+window.saveUserChanges = async function () {
+    const userID = document.getElementById("empID").value;
+    const newName = document.getElementById("editName").value;
+    const newEmail = document.getElementById("editEmail").value;
+    const newDep = document.getElementById("editDepOption").value;
+    const newPos = document.getElementById("editPosOption").value;
+    const newSalary = document.getElementById("editSalary").value;
+
+    // Validate fields
+    if (newName == "" || newEmail == "" || newDep == "" || newPos == "" || newSalary == "") {
+        alert('Please enter all fields and select a department and position !');
+        return;
+    }
+
+    // Update in Firestore
+    const usersRef = collection(firestore, 'users');
+    const q = query(usersRef, where('uid', '==', userID));
+
+    getDocs(q)
+        .then((querySnapshot) => {
+            if (!querySnapshot.empty) {
+                querySnapshot.forEach((doc) => {
+                    const userRef = doc.ref;
+                    return updateDoc(userRef, {
+                        name: newName,
+                        email: newEmail,
+                        dep_id: newDep,
+                        pos_id: newPos,
+                        salary: newSalary,
+                    })
+                        .then(() => {
+                            console.log("User details updated successfully");
+                            document.getElementById("editOverlay").style.display = "none";
+
+                            toRefresh();
+                        })
+                        .catch((error) => {
+                            console.error("Error updating user details:", error);
+                        });
+                });
+            } else {
+                console.log('User document does not exist');
+            }
+        })
+        .catch((error) => {
+            console.log('Error fetching user profile:', error);
+        });
+}
+
+// For delete user
+window.deleteUser = async function (userId) {
+    if (confirm("Are you sure you want to delete this user?")) {
+        const usersRef = collection(firestore, 'users');
+        const q = query(usersRef, where('uid', '==', userId));
+
+        getDocs(q)
+            .then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    querySnapshot.forEach((doc) => {
+                        const userRef = doc.ref;
+                        deleteDoc(userRef)
+                            .then(() => {
+                                console.log("User deleted successfully");
+                                alert("User deleted successfully");
+
+                                toRefresh();
+                            })
+                            .catch((error) => {
+                                console.error("Error deleting user:", error);
+                            });
+                    });
+                } else {
+                    console.log('User document does not exist');
+                }
+            })
+            .catch((error) => {
+                console.log('Error fetching user profile:', error);
+            });
     }
 }
+
+
+function filterTable() {
+    const input = document.getElementById("searchInput");
+    const filter = input.value.toUpperCase();
+    const table = document.getElementById("userTable");
+    const rows = table.getElementsByTagName("tr");
+
+    for (let i = 1; i < rows.length; i++) {
+        const nameColumn = rows[i].getElementsByTagName("td")[1];
+        const emailColumn = rows[i].getElementsByTagName("td")[2];
+
+        if (nameColumn || emailColumn) {
+            const nameText = nameColumn.textContent || nameColumn.innerText;
+            const emailText = emailColumn.textContent || emailColumn.innerText;
+
+            if (nameText.toUpperCase().indexOf(filter) > -1 || emailText.toUpperCase().indexOf(filter) > -1) {
+                rows[i].style.display = "";
+            } else {
+                rows[i].style.display = "none";
+            }
+        }
+    }
+}
+
+// Attach an event listener to the search input field
+document.getElementById("searchInput").addEventListener("keyup", filterTable);
+
 
 function validate_phone(phoneNumber) {
     const phonePattern = /^\d{9,10}$/;
@@ -235,3 +386,9 @@ function validate_phone(phoneNumber) {
 window.addEventListener('DOMContentLoaded', function () {
     generateDep();
 });
+
+function toRefresh() {
+    setTimeout(() => {
+        location.reload();
+    }, 1000);
+}

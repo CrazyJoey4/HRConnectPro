@@ -52,7 +52,7 @@
 
                     <div class="InputText">
                         <label>Email</label><br />
-                        <input type="text" name="email" id="email">
+                        <input type="text" name="email" id="email" readonly>
                     </div>
 
                     <div class="InputText">
@@ -68,7 +68,7 @@
                     <div class="forBank">
                         <div class="InputOption">
                             <select class="bankType" name="bankType" id="bankType">
-                                <option>Select Bank Type</option>
+                                <option value="">Select Bank Type</option>
                             </select>
                         </div>
 
@@ -82,12 +82,12 @@
                         <label>Marital Status</label>
                         <br>
                         <select class="maritalOptions" name="maritalOptions" id="maritalOptions">
-                            <option>Select Marital Status</option>
-                            <option value="1">Single</option>
-                            <option value="2">Married</option>
-                            <option value="3">Divorced</option>
-                            <option value="4">Separated</option>
-                            <option value="5">Widowed</option>
+                            <option value="">Select Marital Status</option>
+                            <option value="Single">Single</option>
+                            <option value="Married">Married</option>
+                            <option value="Divorced">Divorced</option>
+                            <option value="Separated">Separated</option>
+                            <option value="Widowed  ">Widowed</option>
                         </select>
                     </div>
 

@@ -25,6 +25,7 @@
 
 body {
     font-family: "Poppins", sans-serif;
+    font-size: 1rem;
 }
 
 a {
@@ -341,12 +342,12 @@ input::-webkit-inner-spin-button {
     box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.4);
     max-height: 0;
     transition: max-height 0.5s ease-in-out;
+    z-index: 50;
 }
 
 .topnav .dropdown:hover .dropdown-options {
     max-height: 200px;
     box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.4);
-    z-index: 11;
 }
 
 .topnav .dropdown-options a {
@@ -422,10 +423,10 @@ input::-webkit-inner-spin-button {
     outline: none;
 }
 
-.InputText input#name,
-.topnav, 
-.userTable #name
- {
+.InputText input#UserName,
+.topnav,
+.userTable #name,
+.overlay #editName {
     text-transform: capitalize;
 }
 
@@ -440,7 +441,8 @@ input::-webkit-inner-spin-button {
     gap: 1.5rem;
 }
 
-select.bankType, select.maritalOptions {
+select.bankType,
+select.maritalOptions {
     width: 100%;
     color: var(--forWhiteText);
 }
@@ -453,12 +455,14 @@ select.bankType, select.maritalOptions {
     margin-bottom: 10px;
 }
 
+#phoneNo,
 #bankNo {
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 select.maritalOptions {
     width: 50% !important;
+    float: left;
 }
 
 /* Employee Management */
@@ -468,7 +472,8 @@ select.maritalOptions {
     justify-content: space-between;
 }
 
-.add_btn {
+.add_btn,
+.editbtn {
     background-color: var(--purple);
     color: var(--forWhiteText);
     text-align: center;
@@ -485,7 +490,8 @@ select.maritalOptions {
     font-weight: bold;
 }
 
-.add_btn:hover {
+.add_btn:hover,
+.editbtn:hover {
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
     opacity: 1;
     transition: 0.3s;
@@ -506,10 +512,28 @@ select.maritalOptions {
 .table-block .userTable tr,
 .table-block .userTable td {
     border: 2px solid var(--light-purple-color);
-    padding: 5px 12px;
+    padding: 5px 10px;
 }
 
-#overlay {
+.userTable .actioncol {
+    padding: 5px 0px !important;
+    text-align: center;
+}
+
+.userTable #actioncol1 {
+    border-right: none;
+}
+
+.userTable #actioncol2 {
+    border-left: none;
+}
+
+.editbtn {
+    padding: 5px 10px;
+}
+
+#overlay,
+#editOverlay {
     position: fixed;
     display: none;
     width: 65%;
@@ -527,7 +551,7 @@ select.maritalOptions {
     height: 2.2rem;
     width: 100%;
     position: relative;
-    margin-top: 3rem;   
+    margin-top: 3rem;
 }
 
 .overlay .InputText input {
@@ -558,6 +582,41 @@ select.maritalOptions {
     color: var(--md-dark-color);
     outline: none;
     opacity: 1;
+}
+
+.forEmail {
+    display: flex;
+}
+
+.phoneInput {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.phoneCode {
+    width: 10% !important;
+}
+
+.phoneCode input {
+    text-align: center !important;
+    border: none !important;
+}
+
+.constEmail {
+    text-align: left !important;
+}
+
+.constEmail input {
+    width: min-content !important;
+}
+
+.search-box input {
+    width: 40% !important;
+}
+
+.InputText.search-box {
+    text-align: left;
 }
 
 /* Animation */
