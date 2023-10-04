@@ -472,6 +472,10 @@ input::-webkit-inner-spin-button {
     transition: 0.3s;
 }
 
+.hid-info {
+    display: none;
+}
+
 /* End of Navigation */
 
 
@@ -670,6 +674,16 @@ select.maritalOptions {
 .leaveTable #typeCol,
 .leaveTable #creditCol {
     text-align: center;
+}
+
+/* FAQ / Support */
+.tox-editor-header {
+    background-color: var(--purple) !important;
+}
+
+.tox-promotion,
+.tox-statusbar__right-container {
+    display: none !important;
 }
 
 /* Animation */

@@ -22,6 +22,7 @@ var userId = localStorage.getItem('userId');
 
 checkLoggedIn();
 getName();
+getPosition();
 
 // Check if the user is logged in
 function checkLoggedIn() {
@@ -76,7 +77,7 @@ function getName() {
         });
 }
 
-// For Manager detect
+// For get position
 async function getPosition() {
     const usersRef = collection(firestore, 'users');
     const q = await getDocs(query(usersRef, where('uid', '==', userId)));
@@ -86,20 +87,23 @@ async function getPosition() {
         const depID = user.dep_id;
         const posID = user.pos_id;
 
-        
-    });
+        const depRef = collection(firestore, 'department');
+        const q = query(depRef, where('dep_id', '==', depID));
+        const depSnapshot = await getDocs(q);
 
-    getDocs(q)
-        .then((querySnapshot) => {
-            if (!querySnapshot.empty) {
-                querySnapshot.forEach((doc) => {
-                    const userData = doc.data();
-                    UserName.textContent = userData.name;
-                });
+        if (!depSnapshot.empty) {
+            const depData = depSnapshot.docs[0].data();
+
+            const isHRManager = depData.manager_pid === posID;
+            const departmentTab = document.getElementById('departmentTab');
+
+            if (isHRManager) {
+                departmentTab.style.display = 'block';
             } else {
-                console.log('User document does not exist');
+                departmentTab.style.display = 'none';
             }
-        }).catch((error) => {
-            console.log('Error fetching position:', error);
-        });
+        } else {
+            console.log("Cannot fetch");
+        }
+    });
 }

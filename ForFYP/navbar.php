@@ -38,7 +38,7 @@
                 <li><a href="dashboard.php" <?php if (basename($_SERVER['PHP_SELF']) == 'dashboard.php')
                     echo 'class="active"'; ?>><span class="fa fa-television"></span> Dashboard </a></li>
 
-                <li><a href="depManagePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'depManagePage.php')
+                <li id="departmentTab"><a href="depManagePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'depManagePage.php')
                     echo 'class="active"'; ?>><span class="fa fa-building"></span> Department </a></li>
 
                 <li><a href="empManagePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'empManagePage.php')
@@ -71,6 +71,8 @@
         <div class="topnav">
             <div class="profiletxt">
                 <h5 class="user_name" id="user_name"></h5>
+                <span class="hid-info" id="user_position"></span>
+                <span class="hid-info" id="user_dep"></span>
             </div>
 
             <div class="profilepic">
