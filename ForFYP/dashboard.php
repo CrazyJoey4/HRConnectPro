@@ -15,6 +15,8 @@
         <h1>Dashboard</h1>
     </div>
 
+    <!-- <img src="graph.png" alt="Sample Bar Chart"> -->
+
 </body>
 
 </html>

@@ -75,3 +75,31 @@ function getName() {
             console.log('Error fetching position:', error);
         });
 }
+
+// For Manager detect
+async function getPosition() {
+    const usersRef = collection(firestore, 'users');
+    const q = await getDocs(query(usersRef, where('uid', '==', userId)));
+
+    q.forEach(async (doc) => {
+        const user = doc.data();
+        const depID = user.dep_id;
+        const posID = user.pos_id;
+
+        
+    });
+
+    getDocs(q)
+        .then((querySnapshot) => {
+            if (!querySnapshot.empty) {
+                querySnapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    UserName.textContent = userData.name;
+                });
+            } else {
+                console.log('User document does not exist');
+            }
+        }).catch((error) => {
+            console.log('Error fetching position:', error);
+        });
+}

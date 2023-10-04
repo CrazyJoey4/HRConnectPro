@@ -38,6 +38,9 @@
                 <li><a href="dashboard.php" <?php if (basename($_SERVER['PHP_SELF']) == 'dashboard.php')
                     echo 'class="active"'; ?>><span class="fa fa-television"></span> Dashboard </a></li>
 
+                <li><a href="depManagePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'depManagePage.php')
+                    echo 'class="active"'; ?>><span class="fa fa-building"></span> Department </a></li>
+
                 <li><a href="empManagePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'empManagePage.php')
                     echo 'class="active"'; ?>><span class="fa fa-user-tie"></span> Employee </a></li>
 
@@ -52,9 +55,6 @@
 
                 <li><a href="payrollPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'payrollPage.php')
                     echo 'class="active"'; ?>><span class="fa fa-wallet"></span> Payroll </a></li>
-
-                <li><a href="depManagePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'depManagePage.php')
-                    echo 'class="active"'; ?>><span class="fa fa-building"></span> Department </a></li>
 
                 <li><a href="supportPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'supportPage.php')
                     echo 'class="active"'; ?>><span class="fa fa-question"></span> FAQs </a></li>
