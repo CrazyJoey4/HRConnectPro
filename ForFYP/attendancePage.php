@@ -4,10 +4,8 @@
 <head>
     <title> Attendance </title>
     <link rel="icon" href="media/hr-icon.png">
-
-    <?php
-    include "./navBar.php";
-    ?>
+    <?php include "./navBar.php"; ?>
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
 </head>
 
 <body>
@@ -16,33 +14,45 @@
 
         <video id="video" autoplay></video>
         <canvas id="canvas"></canvas>
+        <button id="captureButton">Capture</button>
     </div>
 
-    <script type="text/javascript">
-        let video = document.getElementById('video');
-        let canvas = document.getElementById('canvas');
-        let ctx = canvas.getContext('2d');
+    <script>
+        async function startCamera() {
+            const video = document.getElementById('video');
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+        }
 
-        function onOpenCvReady() {
-            // OpenCV.js is ready
+        async function loadFaceAPI() {
+            await faceapi.loadModels('/models');
             startCamera();
         }
 
-        function startCamera() {
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then((stream) => {
-                    video.srcObject = stream;
-                    detectFaces();
-                })
-                .catch((error) => {
-                    console.error('Error accessing webcam:', error);
-                });
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFaceAPI();
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const captureButton = document.getElementById('captureButton');
 
-        function detectFaces() {
-            // Use OpenCV.js to perform face detection here
-            // Draw rectangles around detected faces on the canvas
-        }
+            captureButton.addEventListener('click', async () => {
+                // Capture a frame from the video
+                canvas.width = video.width;
+                canvas.height = video.height;
+                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                // Perform face detection
+                const detections = await faceapi.detectAllFaces(canvas).withFaceLandmarks().withFaceDescriptors();
+
+                if (detections.length > 0) {
+                    // Face(s) detected
+                    alert('Face(s) detected! You can proceed to attendance processing.');
+                } else {
+                    // No face detected
+                    alert('No face detected. Please try again.');
+                }
+            });
+        });
     </script>
 </body>
 

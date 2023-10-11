@@ -20,9 +20,12 @@ const firestore = getFirestore(firebaseApp);
 
 var userId = localStorage.getItem('userId');
 
-checkLoggedIn();
-getName();
-getPosition();
+window.addEventListener('DOMContentLoaded', function () {
+    checkLoggedIn();
+    getName();
+    getPosition();
+});
+
 
 // Check if the user is logged in
 function checkLoggedIn() {
@@ -92,15 +95,18 @@ async function getPosition() {
         const depSnapshot = await getDocs(q);
 
         if (!depSnapshot.empty) {
+            const currentPage = window.location.pathname.split('/').pop();
             const depData = depSnapshot.docs[0].data();
-
             const isHRManager = depData.manager_pid === posID;
-            const departmentTab = document.getElementById('departmentTab');
 
             if (isHRManager) {
-                departmentTab.style.display = 'block';
-            } else {
-                departmentTab.style.display = 'none';
+                document.getElementById("management_part").style.display = "block";
+
+                const departmentTab = document.createElement('li');
+                departmentTab.innerHTML = `<a href="depManagePage.php" ${currentPage === 'depManagePage.php' ? 'class="active"' : ''}><span class="fa fa-building"></span> Department </a>`;
+                const managePart = document.querySelector('.sidenav .management_tab');
+
+                managePart.insertBefore(departmentTab, managePart.firstChild);
             }
         } else {
             console.log("Cannot fetch");

@@ -32,7 +32,6 @@
                     <th class="depCol">Department</th>
                     <th colspan='2'>Action</th>
                 </tr>
-
             </table>
         </div>
 

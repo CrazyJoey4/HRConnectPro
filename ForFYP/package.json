@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "firebase-admin": "^11.11.0",
     "intl-tel-input": "^18.2.1"
   }
 }

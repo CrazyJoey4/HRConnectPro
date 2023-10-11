@@ -177,8 +177,6 @@ window.addEmp = async function (event) {
     const selectedDep = document.getElementById("depOption").value;
     const selectedPos = document.getElementById("posOption").value;
 
-    // name = name.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-
     // Validate fields
     if (name == "" || email == "" || phoneNo == "" || selectedDep == "" || selectedPos == "" || salary == "") {
         alert('Please enter all fields and select a department and position !');
@@ -241,7 +239,6 @@ window.addEmp = async function (event) {
 }
 
 
-
 // For Edit button
 window.editUser = async function (userId) {
     const usersRef = collection(firestore, 'users');
@@ -270,6 +267,7 @@ window.editUser = async function (userId) {
         });
 }
 
+// For Save edited details
 window.saveUserChanges = async function () {
     const userID = document.getElementById("empID").value;
     const newName = document.getElementById("editName").value;
@@ -387,10 +385,43 @@ function validate_phone(phoneNumber) {
 
 window.addEventListener('DOMContentLoaded', function () {
     generateDep();
+    checkAuth();
 });
 
 function toRefresh() {
     setTimeout(() => {
         location.reload();
     }, 1000);
+}
+
+// For avoid employee enter without access
+async function checkAuth() {
+    var userId = localStorage.getItem('userId');
+    const usersRef = collection(firestore, 'users');
+    const q = await getDocs(query(usersRef, where('uid', '==', userId)));
+
+    q.forEach(async (doc) => {
+        const user = doc.data();
+        const depID = user.dep_id;
+        const posID = user.pos_id;
+
+        const depRef = collection(firestore, 'department');
+        const q = query(depRef, where('dep_id', '==', depID));
+        const depSnapshot = await getDocs(q);
+
+        if (!depSnapshot.empty) {
+            const currentPage = window.location.pathname.split('/').pop();
+            const depData = depSnapshot.docs[0].data();
+            const isHRManager = depData.manager_pid === posID;
+
+            if (isHRManager) {
+                
+            }
+            else {
+                window.location.assign('dashboard.php');
+            }
+        } else {
+            console.log("Cannot fetch");
+        }
+    });
 }

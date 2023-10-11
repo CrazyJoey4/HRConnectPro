@@ -38,13 +38,10 @@
                 <li><a href="dashboard.php" <?php if (basename($_SERVER['PHP_SELF']) == 'dashboard.php')
                     echo 'class="active"'; ?>><span class="fa fa-television"></span> Dashboard </a></li>
 
-                <li id="departmentTab"><a href="depManagePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'depManagePage.php')
-                    echo 'class="active"'; ?>><span class="fa fa-building"></span> Department </a></li>
-
-                <li><a href="empManagePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'empManagePage.php')
+                <li><a href="employeePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'employeePage.php')
                     echo 'class="active"'; ?>><span class="fa fa-user-tie"></span> Employee </a></li>
 
-                <li><a href="leaveManagePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'leaveManagePage.php')
+                <li><a href="leaveApplyPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'leaveApplyPage.php')
                     echo 'class="active"'; ?>><span class="fa fa-calendar"></span> Leave </a></li>
 
                 <li><a href="attendancePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'attendancePage.php')
@@ -53,19 +50,42 @@
                 <li><a href="performancePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'performancePage.php')
                     echo 'class="active"'; ?>><span class="fa fa-trophy"></span> Performance Record </a></li>
 
-                <li><a href="payrollPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'payrollPage.php')
+                <li><a href="viewPayrollPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'viewPayrollPage.php')
                     echo 'class="active"'; ?>><span class="fa fa-wallet"></span> Payroll </a></li>
+
+                <li><a href="addfeedbackPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'addfeedbackPage.php')
+                    echo 'class="active"'; ?>><span class="fa fa-comment-dots"></span> Feedback </a></li>
 
                 <li><a href="supportPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'supportPage.php')
                     echo 'class="active"'; ?>><span class="fa fa-question"></span> FAQs </a></li>
 
-                <li><a href="feedbackPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'feedbackPage.php')
-                    echo 'class="active"'; ?>><span class="fa fa-comment-dots"></span> Feedback </a></li>
-
-                <li><a href="settingPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'settingPage.php')
-                    echo 'class="active"'; ?>><span class="fa fa-cog"></span> Settings </a></li>
-
             </ul>
+            <div id="management_part" style="display:none">
+                <hr>
+
+                <h4>Management</h4>
+
+                <ul class="management_tab">
+                    <li><a href="empManagePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'empManagePage.php')
+                        echo 'class="active"'; ?>><span class="fa fa-user-tie"></span> Employee Management </a></li>
+
+                    <li><a href="performanceMnagePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'performanceMnagePage.php')
+                        echo 'class="active"'; ?>><span class="fa fa-bullseye"></span> Project Performance </a></li>
+
+                    <li><a href="leaveManagePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'leaveManagePage.php')
+                        echo 'class="active"'; ?>><span class="fa fa-calendar"></span> Leave Settings </a></li>
+
+                    <li><a href="payrollPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'payrollPage.php')
+                        echo 'class="active"'; ?>><span class="fa fa-wallet"></span> Payroll </a></li>
+
+                    <li><a href="feedbackPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'feedbackPage.php')
+                        echo 'class="active"'; ?>><span class="fa fa-comment-dots"></span> Feedback </a></li>
+
+                    <li><a href="settingPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'settingPage.php')
+                        echo 'class="active"'; ?>><span class="fa fa-cog"></span> Settings </a></li>
+
+                </ul>
+            </div>
         </div>
 
         <div class="topnav">

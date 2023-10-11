@@ -487,10 +487,43 @@ document.getElementById("searchInput").addEventListener("keyup", filterTable);
 
 window.addEventListener('DOMContentLoaded', function () {
     generateDep();
+    checkAuth();
 });
 
 function toRefresh() {
     setTimeout(() => {
         location.reload();
     }, 1000);
+}
+
+// For avoid employee enter without access
+async function checkAuth() {
+    var userId = localStorage.getItem('userId');
+    const usersRef = collection(firestore, 'users');
+    const q = await getDocs(query(usersRef, where('uid', '==', userId)));
+
+    q.forEach(async (doc) => {
+        const user = doc.data();
+        const depID = user.dep_id;
+        const posID = user.pos_id;
+
+        const depRef = collection(firestore, 'department');
+        const q = query(depRef, where('dep_id', '==', depID));
+        const depSnapshot = await getDocs(q);
+
+        if (!depSnapshot.empty) {
+            const currentPage = window.location.pathname.split('/').pop();
+            const depData = depSnapshot.docs[0].data();
+            const isHRManager = depData.manager_pid === posID;
+
+            if (isHRManager) {
+                
+            }
+            else {
+                window.location.assign('dashboard.php');
+            }
+        } else {
+            console.log("Cannot fetch");
+        }
+    });
 }
