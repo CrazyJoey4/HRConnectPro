@@ -48,29 +48,89 @@ document.addEventListener("DOMContentLoaded", async function () {
 });
 
 
-// For Search
-function filterTable() {
-    const input = document.getElementById("searchInput");
-    const filter = input.value.toUpperCase();
-    const table = document.getElementById("payrollTable");
-    const rows = table.getElementsByTagName("tr");
+// Function to extract unique months and years from payroll records
+function extractUniqueMonthsAndYears() {
+    const months = new Set();
+    const years = new Set();
 
-    for (let i = 1; i < rows.length; i++) {
-        const nameColumn = rows[i].getElementsByTagName("td")[1];
-        const emailColumn = rows[i].getElementsByTagName("td")[2];
+    const payRef = collection(firestore, 'payroll');
+    const querySnapshot = getDocs(payRef).then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            const payData = doc.data();
+            const payDate = new Date(payData.pay_date);
 
-        if (nameColumn || emailColumn) {
-            const nameText = nameColumn.textContent || nameColumn.innerText;
-            const emailText = emailColumn.textContent || emailColumn.innerText;
+            months.add(payDate.getMonth() + 1);
+            years.add(payDate.getFullYear());
+        });
 
-            if (nameText.toUpperCase().indexOf(filter) > -1 || emailText.toUpperCase().indexOf(filter) > -1) {
-                rows[i].style.display = "";
-            } else {
-                rows[i].style.display = "none";
-            }
-        }
-    }
+        // Sort the unique months and years
+        const uniqueMonths = Array.from(months).sort();
+        const uniqueYears = Array.from(years).sort();
+
+        // Populate the dropdowns with options
+        populateDropdown("filterMonth", uniqueMonths);
+        populateDropdown("filterYear", uniqueYears);
+    });
 }
 
-// Attach an event listener to the search input field
-document.getElementById("searchInput").addEventListener("keyup", filterTable);
+// Function to populate a dropdown with options
+function populateDropdown(dropdownId, values) {
+    const dropdown = document.getElementById(dropdownId);
+    dropdown.innerHTML = "<option value=''>All</option>";
+
+    values.forEach((value) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.text = value;
+        dropdown.appendChild(option);
+    });
+}
+
+// Function to filter and display payroll records
+function filterPayroll(month, year) {
+    const payrollTable = document.getElementById('payrollTable');
+    payrollTable.innerHTML = `
+        <th class="idCol">ID</th>
+        <th class="dateCol">Upload Date</th>
+        <th class="fileCol">File</th>
+        `;
+
+    const payRef = collection(firestore, 'payroll');
+    const querySnapshot = getDocs(payRef).then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            const payData = doc.data();
+            const payDate = new Date(payData.pay_date);
+
+            if (
+                (month === "" || payDate.getMonth() + 1 === parseInt(month)) && (year === "" || payDate.getFullYear() === parseInt(year)) &&
+                payData.uid === userId
+            ) {
+                const newRow = payrollTable.insertRow();
+                newRow.innerHTML = `
+                    <td>${payData.pay_id}</td>
+                    <td class="dateCol">${payData.pay_date}</td>
+                    <td id="fileCol"><a href="${payData.pay_doc_url}" target="_blank">${payData.pay_id}.pdf</a></td>
+                `;
+            }
+        });
+    });
+}
+
+
+// Add event listeners to the month and year dropdowns
+const filterMonthDropdown = document.getElementById("filterMonth");
+const filterYearDropdown = document.getElementById("filterYear");
+
+filterMonthDropdown.addEventListener("change", function () {
+    const selectedMonth = filterMonthDropdown.value;
+    const selectedYear = filterYearDropdown.value;
+    filterPayroll(selectedMonth, selectedYear);
+});
+
+filterYearDropdown.addEventListener("change", function () {
+    const selectedMonth = filterMonthDropdown.value;
+    const selectedYear = filterYearDropdown.value;
+    filterPayroll(selectedMonth, selectedYear);
+});
+
+extractUniqueMonthsAndYears();

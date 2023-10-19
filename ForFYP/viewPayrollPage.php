@@ -16,8 +16,16 @@
             <h1>Payroll Record</h1>
         </div>
 
-        <div class="InputText search-box">
-            <input type="text" id="searchInput" placeholder="Search by name or department">
+        <div class="forFilter">
+            <div class="InputOption">
+                <label>Month</label></br>
+                <select class="dateFilter filterMonth" name="filterMonth" id="filterMonth"></select>
+            </div>
+    
+            <div class="InputOption">
+                <label>Year</label></br>
+                <select class="dateFilter filterYear" name="filterYear" id="filterYear"></select>
+            </div>
         </div>
 
         <div class="table-block">

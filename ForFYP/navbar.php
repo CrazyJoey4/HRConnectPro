@@ -73,7 +73,7 @@
                         echo 'class="active"'; ?>><span class="fa fa-bullseye"></span> Project Performance </a></li>
 
                     <li><a href="leaveManagePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'leaveManagePage.php')
-                        echo 'class="active"'; ?>><span class="fa fa-calendar"></span> Leave Settings </a></li>
+                        echo 'class="active"'; ?>><span class="fa fa-calendar"></span> Leave Approval </a></li>
 
                     <li><a href="payrollPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'payrollPage.php')
                         echo 'class="active"'; ?>><span class="fa fa-wallet"></span> Payroll </a></li>
@@ -83,7 +83,6 @@
 
                     <li><a href="settingPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'settingPage.php')
                         echo 'class="active"'; ?>><span class="fa fa-cog"></span> Settings </a></li>
-
                 </ul>
             </div>
         </div>

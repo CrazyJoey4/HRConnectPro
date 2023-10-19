@@ -291,10 +291,10 @@ window.saveUserChanges = async function () {
 
 
 // For delete payroll
-window.deletePay = async function (userId) {
+window.deletePay = async function (payrollId) {
     if (confirm("Are you sure you want to delete this payslip?")) {
-        const usersRef = collection(firestore, 'users');
-        const q = query(usersRef, where('uid', '==', userId));
+        const PayRef = collection(firestore, 'payroll');
+        const q = query(PayRef, where('pay_id', '==', payrollId));
 
         getDocs(q)
             .then((querySnapshot) => {
@@ -303,21 +303,21 @@ window.deletePay = async function (userId) {
                         const userRef = doc.ref;
                         deleteDoc(userRef)
                             .then(() => {
-                                console.log("User deleted successfully");
-                                alert("User deleted successfully");
+                                console.log("Payslip record deleted successfully");
+                                alert("Payslip record deleted successfully");
 
                                 toRefresh();
                             })
                             .catch((error) => {
-                                console.error("Error deleting user:", error);
+                                console.error("Error deleting Payslip:", error);
                             });
                     });
                 } else {
-                    console.log('User document does not exist');
+                    console.log('Payslip document does not exist');
                 }
             })
             .catch((error) => {
-                console.log('Error fetching user profile:', error);
+                console.log('Error fetching Payslip record:', error);
             });
     }
 }

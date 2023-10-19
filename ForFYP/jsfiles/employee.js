@@ -183,6 +183,11 @@ window.addEmp = async function (event) {
         return;
     }
 
+    // Capitalize the first letter of each word in the name
+    let capitalizedName = name.toLowerCase().replace(/\b\w/g, function (l) {
+        return l.toUpperCase();
+    });
+
     var woPlus = countryCode.slice(1);
 
     if (validate_phone(phoneNo) == false) {
@@ -195,10 +200,10 @@ window.addEmp = async function (event) {
     const currentDate = new Date().toISOString().split('T')[0];
     const finalEmail = `${email}${constemail}`;
 
-    console.log(name);
+    console.log(capitalizedName);
 
     addDoc(collection(firestore, "users"), {
-        name: name,
+        name: capitalizedName,
         email: finalEmail,
         phoneNo: finalPhone,
         salary: salary,
@@ -208,7 +213,6 @@ window.addEmp = async function (event) {
         uid: userID,
         hire_date: currentDate,
 
-        emp_status_id: "1",
         leave_balance: "",
         gender: "",
         dob: "",
@@ -415,7 +419,7 @@ async function checkAuth() {
             const isHRManager = depData.manager_pid === posID;
 
             if (isHRManager) {
-                
+
             }
             else {
                 window.location.assign('dashboard.php');

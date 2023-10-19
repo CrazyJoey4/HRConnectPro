@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, deleteUser } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore, collection, getDocs, query, where, updateDoc, deleteDoc, addDoc, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+import { getFirestore, collection, getDocs, query, where, updateDoc, deleteDoc, addDoc, orderBy, limit, doc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-storage.js";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -16,181 +17,238 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
+const storage = getStorage(firebaseApp);
 
 var userId = localStorage.getItem('userId');
 
 // Fetch Leave details
 document.addEventListener("DOMContentLoaded", async function () {
     window.fetchLeaveDetails = async function () {
-        const LeaveTable = document.getElementById('leaveTable');
+        const leaveTable = document.getElementById('leaveTable');
 
-        const leaveRef = collection(firestore, 'leave');
-        const querySnapshot = await getDocs(query(leaveRef, orderBy('leave_id', 'asc')));
+        const leaveRef = collection(firestore, 'leaveApply');
+        const q = query(leaveRef, where('uid', '==', userId));
+        const leaveSnapshot = await getDocs(q);
 
-        querySnapshot.forEach(async (doc) => {
-            const leave = doc.data();
+        if (!leaveSnapshot.empty) {
+            leaveSnapshot.forEach(async (doc) => {
+                const leaveAData = doc.data();
+                const leaveApplyID = leaveAData.leaveApply_id;
+                const leaveName = await getEmployeeName(leaveAData.uid);
+                const leaveType = await getLeaveName(leaveAData.leave_type);
+                const leaveStartDate = leaveAData.start_date;
+                const leaveEndDate = leaveAData.end_date;
+                const leaveStatus = leaveAData.approve_status;
+                const leaveDuration = getLeaveDuration(leaveStartDate, leaveEndDate);
+                const leaveDoc = leaveAData.leave_doc;
 
-            const newRow = LeaveTable.insertRow();
-            newRow.innerHTML = `
-                <td>${leave.leave_id}</td>
-                <td id="nameCol">${leave.leave_name}</td>
-                <td id="typeCol">${leave.leave_type}</td>
-                <td id="creditCol">${leave.leave_credit}</td>
-                <td>${leave.leave_desc}</td>
-                <td class="actioncol" id="actioncol1"><button class="editbtn" onclick="editleave('${leave.leave_id}')"><i class='material-icons'>edit</i></button></td>
-                <td class="actioncol" id="actioncol2"><button class="editbtn" onclick="deleteleave('${leave.leave_id}')"><i class='material-icons'>delete</i></button></td>
+                let statusColor = '';
+                switch (leaveStatus) {
+                    case 'Approved':
+                        statusColor = 'var(--forGreenBG)';
+                        break;
+                    case 'Pending':
+                        statusColor = 'var(--forBlueBG)';
+                        break;
+                    case 'Rejected':
+                        statusColor = 'var(--forRedBG)';
+                        break;
+                    default:
+                        statusColor = 'black';
+                        break;
+                }
+
+                // Add the fetched data to the table
+                const newRow = leaveTable.insertRow();
+                newRow.innerHTML = `
+                    <td id="nameCol">${leaveType}</td>
+                    <td id="dateCol">${leaveDuration} day(s)</td>
+                    <td id="dateCol">${leaveStartDate}</td>
+                    <td id="dateCol">${leaveEndDate}</td>
+                    <td id="statusCol" style="background: ${statusColor}">${leaveStatus}</td>
+                    <td id="fileCol">
+                        ${leaveDoc ? `<a href="${leaveDoc}" target="_blank" rel="noopener noreferrer">View Document</a>` : ''}
+                    </td>
+                    <td class="actioncol" id="actioncol1"><button class="editbtn" onclick="deleteLeave('${leaveApplyID}')"><i class='material-icons'>delete</i></button></td>
                 `;
-        });
+            });
+        }
     }
 });
 
+
+// Function to get employee name using uid
+async function getEmployeeName(uid) {
+    const usersRef = collection(firestore, 'users');
+    const querySnapshot = await getDocs(query(usersRef, where('uid', '==', uid)));
+    if (!querySnapshot.empty) {
+        const user = querySnapshot.docs[0].data();
+        return user.name;
+    } else {
+        return "Employee Name Not Found";
+    }
+}
+
+// Function to get leave name using leave id
+async function getLeaveName(typeID) {
+    const leaveRef = collection(firestore, 'leave');
+    const querySnapshot = await getDocs(query(leaveRef, where('leave_id', '==', typeID)));
+    if (!querySnapshot.empty) {
+        const leaveData = querySnapshot.docs[0].data();
+        return leaveData.leave_name;
+    } else {
+        return "Leave Name Not Found";
+    }
+}
+
+// Function to calculate duration
+function getLeaveDuration(startDate, endDate) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    const durationInMilliseconds = end - start;
+
+    // Calculate the number of days
+    const days = Math.floor(durationInMilliseconds / (24 * 60 * 60 * 1000));
+
+    // Calculate the number of weekends
+    let weekends = 0;
+    for (let i = 0; i < days; i++) {
+        const currentDate = new Date(start.getTime() + (i * 24 * 60 * 60 * 1000));
+        if (currentDate.getDay() === 0 || currentDate.getDay() === 6) {
+            weekends++;
+        }
+    }
+
+    // Excluding weekends
+    const leaveDuration = days - weekends + 1;
+
+    return leaveDuration;
+}
+
 // For genetrate Leave ID
 async function generateNewID() {
-    const leaveRef = collection(firestore, 'leave');
-    const querySnapshot = await getDocs(query(leaveRef, orderBy('leave_id', 'desc'), limit(1)));
+    const leaveRef = collection(firestore, 'leaveApply');
+    const querySnapshot = await getDocs(query(leaveRef, orderBy('leaveApply_id', 'desc'), limit(1)));
 
-    let newID = 'L00001';
+    let newID = 'LA000001';
 
     if (!querySnapshot.empty) {
-        const lastID = querySnapshot.docs[0].data().leave_id;
-        const numericPart = parseInt(lastID.slice(1), 10) + 1;
+        const lastID = querySnapshot.docs[0].data().leaveApply_id;
+        const numericPart = parseInt(lastID.slice(2), 10) + 1;
 
-        const formattedNumericPart = String(numericPart).padStart(5, '0');
+        const formattedNumericPart = String(numericPart).padStart(6, '0');
 
-        // Combine the prefix and the numeric part
-        newID = `L${formattedNumericPart}`;
+        newID = `LA${formattedNumericPart}`;
     }
     return newID;
 }
 
+// For fetching leave type
+async function generateType() {
+    const depSelect = document.getElementById("typeOption");
+
+    const leaveRef = collection(firestore, 'leave');
+    const querySnapshot = await getDocs(leaveRef);
+
+    querySnapshot.forEach((doc) => {
+        const option = document.createElement("option");
+        option.value = doc.data().leave_id;
+        option.text = doc.data().leave_name;
+        depSelect.appendChild(option);
+    });
+}
+
 // Add Leave
-window.addleave = async function (event) {
+window.applyleave = async function (event) {
     event.preventDefault();
 
     // Get Leave details from the form
-    const name = document.getElementById("name").value;
-    const credit = document.getElementById("credit").value;
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
     const description = document.getElementById("desc").value;
     const selectedType = document.getElementById("typeOption").value;
+    const leaveDoc = document.getElementById("leaveDoc").files[0];
 
     // Validate fields
-    if (name == "" || credit == "" || selectedType == "") {
-        alert('Please enter all fields and select a leave type !');
+    if (startDate == "" || endDate == "" || selectedType == "") {
+        alert('Please enter all fields and select a leave type!');
         return;
     }
 
+    // Generate a new leave ID
     const leaveID = await generateNewID();
 
-    addDoc(collection(firestore, "leave"), {
-        leave_id: leaveID,
-        leave_name: name,
-        leave_credit: credit,
-        leave_desc: description,
-        leave_type: selectedType,
-    })
-        .then(function (docRef) {
-            alert("Leave added ", docRef.uid);
+    // if provided document
+    let docUrl = null;
+    if (leaveDoc) {
+        const storageRef = ref(storage, `leaveDocuments/${leaveID}`);
+        const snapshot = await uploadBytes(storageRef, leaveDoc);
+        docUrl = await getDownloadURL(snapshot.ref);
+    }
+    else {
+        docUrl = "";
+    }
 
-            toRefresh();
-        })
-        .catch(function (error) {
-            console.error("Error adding Leave: ", error);
-            alert("Error adding Leave: ", error);
-        });
+    // Find manager id
+    const usersRef = collection(firestore, 'users');
+    const q = await getDocs(query(usersRef, where('uid', '==', userId)));
+
+    q.forEach(async (doc) => {
+        const user = doc.data();
+        const depID = user.dep_id;
+
+        const depRef = collection(firestore, 'department');
+        const q = query(depRef, where('dep_id', '==', depID));
+        const depSnapshot = await getDocs(q);
+
+        if (!depSnapshot.empty) {
+            const depData = depSnapshot.docs[0].data();
+            const depManager = depData.manager_pid;
+
+            // Add leave details
+            addDoc(collection(firestore, "leaveApply"), {
+                leaveApply_id: leaveID,
+                uid: userId,
+                manager_uid: depManager,
+                approve_status: "Pending",
+
+                apply_desc: description,
+                reject_desc: "",
+                start_date: startDate,
+                end_date: endDate,
+                leave_type: selectedType,
+                leave_doc: docUrl,
+
+            })
+                .then(function (docRef) {
+                    alert("Leave added, please wait for approval from manager");
+                    toRefresh();
+                })
+                .catch(function (error) {
+                    console.error("Error adding Leave: ", error);
+                    alert("Error adding Leave: " + error);
+                });
+        } else {
+            console.log("Cannot fetch");
+        }
+    });
 
     // Clear form
     document.getElementById("overlay").style.display = "none";
-    document.getElementById("name").value = "";
-    document.getElementById("credit").value = "";
+    document.getElementById("startDate").value = "";
+    document.getElementById("endDate").value = "";
     document.getElementById("desc").value = "";
-
-    document.getElementById("typeOption").value = "<option value=''>Select Type</option>";
+    document.getElementById("typeOption").value = "";
+    document.getElementById("leaveDoc").value = "";
 }
 
 
-
-// For Edit button
-window.editleave = async function (leaveId) {
-    const leaveRef = collection(firestore, 'leave');
-    const q = query(leaveRef, where('leave_id', '==', leaveId));
-
-    getDocs(q)
-        .then((querySnapshot) => {
-            if (!querySnapshot.empty) {
-                querySnapshot.forEach((doc) => {
-                    const leaveData = doc.data();
-
-                    document.getElementById("leaveID").value = leaveData.leave_id;
-                    document.getElementById("editName").value = leaveData.leave_name;
-                    document.getElementById("editCredit").value = leaveData.leave_credit;
-                    document.getElementById("editTypeOption").value = leaveData.leave_type;
-                    document.getElementById("editDesc").value = leaveData.leave_desc;
-
-                    document.getElementById("editOverlay").style.display = "block";
-                    document.getElementById("overlayBg").style.display = "block";
-                });
-            } else {
-                console.log('leave document does not exist');
-            }
-        })
-        .catch((error) => {
-            console.log('Error fetching leave profile:', error);
-        });
-}
-
-window.saveChanges = async function () {
-    const leaveID = document.getElementById("leaveID").value;
-    const newName = document.getElementById("editName").value;
-    const newCredit = document.getElementById("editCredit").value;
-    const newType = document.getElementById("editTypeOption").value;
-    const newDesc = document.getElementById("editDesc").value;
-
-    // Validate fields
-    if (newName == "" || newCredit == "" || newType == "") {
-        alert('Please enter all fields and select a leave and position !');
-        return;
-    }
-
-    // Update in Firestore
-    const leaveRef = collection(firestore, 'leave');
-    const q = query(leaveRef, where('leave_id', '==', leaveID));
-
-    getDocs(q)
-        .then((querySnapshot) => {
-            if (!querySnapshot.empty) {
-                querySnapshot.forEach((doc) => {
-                    const leaveRef = doc.ref;
-                    return updateDoc(leaveRef, {
-                        leave_name: newName,
-                        leave_credit: newCredit,
-                        leave_type: newType,
-                        leave_desc: newDesc,
-                    })
-                        .then(() => {
-                            console.log("Leave details updated successfully");
-                            document.getElementById("editOverlay").style.display = "none";
-                            document.getElementById("overlayBg").style.display = "none";
-
-                            toRefresh();
-                        })
-                        .catch((error) => {
-                            console.error("Error updating leave details:", error);
-                        });
-                });
-            } else {
-                console.log('leave document does not exist');
-            }
-        })
-        .catch((error) => {
-            console.log('Error fetching leave profile:', error);
-        });
-}
-
-// For delete leave
-window.deleteleave = async function (leaveId) {
+// For cancel leave
+window.deleteLeave = async function (leaveId) {
     if (confirm("Are you sure you want to delete this leave?")) {
-        const leaveRef = collection(firestore, 'leave');
-        const q = query(leaveRef, where('leave_id', '==', leaveId));
+        const leaveRef = collection(firestore, 'leaveApply');
+        const q = query(leaveRef, where('leaveApply_id', '==', leaveId));
 
         getDocs(q)
             .then((querySnapshot) => {
@@ -241,6 +299,85 @@ function filterTable() {
         }
     }
 }
+
+
+window.addEventListener('DOMContentLoaded', function () {
+    generateType();
+});
+
+// Initialize FullCalendar
+var calendarEl = document.getElementById('calendar');
+var calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    content: {
+        customClass: 'custom-calendar',
+    }
+});
+
+// Function to fetch leave events and add them to the calendar
+async function fetchLeaveEventsFromFirebase() {
+    const leaveRef = collection(firestore, 'leaveApply');
+    const usersRef = collection(firestore, 'users');
+    const userQuery = query(usersRef, where('uid', '==', userId));
+    const userSnapshot = await getDocs(userQuery);
+
+    if (userSnapshot.empty) {
+        // Handle the case where the current user is not found
+        console.error('Current user not found.');
+        return;
+    }
+
+    const currentUserData = userSnapshot.docs[0].data();
+    const currentDepID = currentUserData.dep_id;
+
+    // Query leave events with "Approved" status
+    const leaveQuery = query(leaveRef, where('approve_status', '==', 'Approved'));
+
+    // Fetch the approved leave events
+    const leaveSnapshot = await getDocs(leaveQuery);
+
+    if (!leaveSnapshot.empty) {
+        const leaveEvents = [];
+
+        for (const doc of leaveSnapshot.docs) {
+            const leaveData = doc.data();
+
+            // Fetch the department of the user associated with this leave event
+            const employeeUserSnapshot = await getDocs(query(usersRef, where('uid', '==', leaveData.uid)));
+
+            if (employeeUserSnapshot.empty) {
+                console.error('User for leave event not found.');
+                continue;
+            }
+
+            const employeeUserData = employeeUserSnapshot.docs[0].data();
+            const employeeDepartment = employeeUserData.dep_id;
+
+            if (employeeDepartment === currentDepID) {
+                const employeeNamePromise = getEmployeeName(leaveData.uid);
+
+                // Use Promise.all to resolve both the leave event and employee name fetching
+                const [employeeName] = await Promise.all([employeeNamePromise]);
+
+                // Format the data into FullCalendar event format
+                const event = {
+                    title: `${employeeName} is on leave`,
+                    start: `${leaveData.start_date}T00:00:00`,
+                    end: `${leaveData.end_date}T23:59:59`,
+                };
+
+                leaveEvents.push(event);
+            }
+        }
+
+        calendar.addEventSource(leaveEvents);
+        calendar.render();
+    }
+}
+
+// Fetch and display leave events
+fetchLeaveEventsFromFirebase();
+
 
 // Attach an event listener to the search input field
 document.getElementById("searchInput").addEventListener("keyup", filterTable);

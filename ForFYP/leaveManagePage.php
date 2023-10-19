@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title> Leave Management </title>
+    <title> Leave Approval </title>
     <link rel="icon" href="media/hr-icon.png">
 
     <?php
@@ -13,135 +13,108 @@
 <body>
     <div class="wrap">
         <div class="topTitle">
-            <h1>Leave Management</h1>
-            <button class='add_btn' onclick="on()">Add Leave &nbsp;<i class='material-icons'>add</i></button>
+            <h1>Leave Approval</h1>
         </div>
 
-        <div class="InputText search-box">
-            <input type="text" id="searchInput" placeholder="Search by name or type">
+        <div class="InputOption">
+            <label for="tableSelect">Select Table:</label>
+            <select id="tableSelect" onchange="toggleTable()">
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+            </select>
         </div>
 
-        <div class="table-block">
-            <table class="detailsTable leaveTable" id="leaveTable">
+        <div class="table-block" id="pendingDetailTable">
+            <table class="detailsTable penTable" id="penTable">
                 <tr>
-                    <th class="idCol">ID</th>
                     <th class="nameCol">Name</th>
                     <th class="typeCol">Type</th>
-                    <th class="creditCol">Credit</th>
+                    <th class="durationCol">Duration</th>
+                    <th class="dateCol">Start Date</th>
+                    <th class="dateCol">End Date</th>
                     <th class="descCol">Description</th>
+                    <th class="docCol">Document</th>
+                    <th class="statusCol">Status</th>
                     <th colspan='2'>Action</th>
                 </tr>
+            </table>
+        </div>
 
+        <div class="table-block" id="approvedDetailTable" style="display:none">
+            <table class="detailsTable appTable" id="appTable">
+                <tr>
+                    <th class="nameCol">Name</th>
+                    <th class="typeCol">Type</th>
+                    <th class="durationCol">Duration</th>
+                    <th class="dateCol">Start Date</th>
+                    <th class="dateCol">End Date</th>
+                    <th class="statusCol">Status</th>
+                </tr>
+            </table>
+        </div>
+
+        <div class="table-block" id="rejectedDetailTable" style="display:none">
+            <table class="detailsTable rejTable" id="rejTable">
+                <tr>
+                    <th class="nameCol">Name</th>
+                    <th class="typeCol">Type</th>
+                    <th class="durationCol">Duration</th>
+                    <th class="dateCol">Start Date</th>
+                    <th class="dateCol">End Date</th>
+                    <th class="statusCol">Status</th>
+                    <th class="remarkCol">Remark</th> 
+                </tr>
             </table>
         </div>
 
         <div class="overlay-bg" id="overlayBg"></div>
 
-        <div id="overlay" class="overlay">
+        <div id="overlay" class="overlay" style>
             <form>
-                <h3><b>Leave Details</b></h3>
+                <h3><b>Reject Leave</b></h3>
 
                 <hr style="border-bottom:2px solid grey;">
 
                 <div class="InputText">
-                    <input type="text" name="name" id="name" autocomplete="off" required>
-                    <label>Name</label><br />
-                </div>
-
-                <div class="InputOption">
-                    <select class="typeOption" name="typeOption" id="typeOption" required>
-                        <option value="">Select Type</option>
-                        <option value="Yearly">Yearly</option>
-                        <option value="Half Yearly">Half Yearly</option>
-                        <option value="Quarterly">Quarterly</option>
-                        <option value="Monthly">Monthly</option>
-                    </select>
-                </div>
-
-                <div class="InputText">
-                    <input type="number" name="credit" id="credit" autocomplete="off" required>
-                    <label>Credit</label><br />
-                </div>
-
-                <div class="InputText">
-                    <input type="text" name="desc" id="desc" autocomplete="off">
-                    <label>Description</label><br />
+                    <label for="rejectReason">Reason for Reject :</label>
+                    <textarea id="rejectReason" placeholder="Enter reason for rejection"></textarea>
                 </div>
 
                 <div class="addBtn-btn">
-                    <input type="submit" name="Add" id="Add" value="Add Leave" class="addBtn" onclick="addleave(event)">
+                    <input type="submit" name="Add" id="Add" value="Add Leave" class="addBtn"
+                        onclick="rejectLeave(event)">
 
                     <button type="reset" class="cancelbtn" onclick="off()">Cancel</button>
                 </div>
             </form>
         </div>
-
-        <div id="editOverlay" class="overlay">
-            <form>
-                <h3><b>Edit Leave Details</b></h3>
-
-                <hr style="border-bottom:2px solid grey;">
-
-                <div style="display:none">
-                    <input type="text" name="leaveID" id="leaveID" readonly>
-                </div>
-
-                <div class="InputText">
-                    <input type="text" name="editName" id="editName" autocomplete="off" required>
-                    <label>Name</label><br />
-                </div>
-
-                <div class="InputOption">
-                    <select class="editTypeOption" name="editTypeOption" id="editTypeOption" required>
-                        <option value="">Select Type</option>
-                        <option value="Yearly">Yearly</option>
-                        <option value="Half Yearly">Half Yearly</option>
-                        <option value="Quarterly">Quarterly</option>
-                        <option value="Monthly">Monthly</option>
-                    </select>
-                </div>
-
-                <div class="InputText">
-                    <input type="number" name="editCredit" id="editCredit" autocomplete="off" required>
-                    <label>Credit</label><br />
-                </div>
-
-                <div class="InputText">
-                    <input type="text" name="editDesc" id="editDesc" autocomplete="off">
-                    <label>Description</label><br />
-                </div>
-
-                <div class="addBtn-btn">
-                    <input type="button" name="Save" id="editSave" value="Save Changes" class="addBtn"
-                        onclick="saveChanges()">
-                    <button type="button" class="cancelbtn" onclick="closeEditOverlay()">Cancel</button>
-                </div>
-            </form>
-        </div>
-
-
     </div>
 
-    <script type="module" src="jsfiles/leaveMng.js"></script>
+    <script type="module" src="jsfiles/leaveApproval.js"></script>
     <script>
-        function on() {
-            document.getElementById("overlay").style.display = "block";
-            document.getElementById("overlayBg").style.display = "block";
-        }
+        function toggleTable() {
+            const tableSelect = document.getElementById("tableSelect");
+            const pendingTable = document.getElementById("pendingDetailTable");
+            const approvedTable = document.getElementById("approvedDetailTable");
+            const rejectedTable = document.getElementById("rejectedDetailTable");
 
-        function off() {
-            document.getElementById("overlay").style.display = "none";
-            document.getElementById("overlayBg").style.display = "none";
+            if (tableSelect.value === "pending") {
+                pendingTable.style.display = "block";
+                approvedTable.style.display = "none";
+                rejectedTable.style.display = "none";
+            }
+            else if (tableSelect.value === "approved") {
+                pendingTable.style.display = "none";
+                approvedTable.style.display = "block";
+                rejectedTable.style.display = "none";
+            }
+            else if (tableSelect.value === "rejected") {
+                pendingTable.style.display = "none";
+                approvedTable.style.display = "none";
+                rejectedTable.style.display = "block";
+            }
         }
-
-        function closeEditOverlay() {
-            document.getElementById("editOverlay").style.display = "none";
-            document.getElementById("overlayBg").style.display = "none";
-        }
-
-        window.addEventListener('DOMContentLoaded', function () {
-            fetchLeaveDetails();
-        });
     </script>
 </body>
 

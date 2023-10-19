@@ -15,6 +15,23 @@
     --cancel: #9c4646;
     --forWhiteText: #fff;
     --forBlackText: #000;
+
+    --forGreenBTN: rgb(112, 255, 148)0;
+    --forGreenBG: #96ffb0;
+    --forRedBG: #ff9696;
+    --forBlueBG: #96c0ff;
+}
+
+h1 {
+    font-family: "Poppins", sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+}
+
+h2 {
+    font-family: "Poppins", sans-serif;
+    font-size: 24px;
+    font-weight: 800;
 }
 
 /* Common styles for various elements */
@@ -81,8 +98,11 @@ a {
 .overlay input#editPosName,
 .topnav,
 .detailsTable #nameCol,
+.detailsTable #typeCol,
 .overlay #editName,
-.empOption option {
+.empOption option,
+.typeOption option,
+select {
     text-transform: capitalize;
 }
 
@@ -196,7 +216,6 @@ input::-webkit-inner-spin-button {
     position: relative;
     display: inline-block;
     padding: 10px;
-    width: 150px;
     font-size: 1.2rem;
     line-height: 20px;
     letter-spacing: 1px;
@@ -208,8 +227,8 @@ input::-webkit-inner-spin-button {
     border-radius: 5px;
     overflow: hidden;
     cursor: pointer;
-    text-transform: uppercase;
-    color: var(--forWhiteText)fff;
+    text-transform: capitalize;
+    color: var(--forWhiteText);
     transition: all 0.3s linear;
 }
 
@@ -355,6 +374,12 @@ input::-webkit-inner-spin-button {
 
 /* Navigation Bar Styles */
 /* Side Nav */
+nav {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
 .topwrap {
     display: flex;
     align-items: center;
@@ -513,7 +538,7 @@ input::-webkit-inner-spin-button {
 
 /* Body content */
 .wrap {
-    min-height: 1000px;
+    min-height: 93vh;
     background-color: var(--background);
     margin-left: 300px;
     padding: 20px;
@@ -692,11 +717,15 @@ select.maritalOptions {
     width: min-content !important;
 }
 
+
+
 /* Department */
 .depTable .nameCol,
 .depTable .depCol {
     width: 40%;
 }
+
+
 
 /* Leave */
 .leaveTable .nameCol {
@@ -708,23 +737,92 @@ select.maritalOptions {
     text-align: center;
 }
 
+.table-block {
+    min-height: 10rem !important;
+}
+
+.forDate {
+    display: flex;
+    gap: 5rem;
+}
+
+.forDate .InputText {
+    margin-top: 10px !important;
+}
+
+.fc-direction-ltr {
+    font-family: none;
+}
+
+
+/* Performance */
+
+
+
+
 /* Payroll */
 .payrollTable #fileCol,
-.payrollTable .dateCol {
+.payrollTable .dateCol,
+#dateCol {
     text-align: center;
 }
-.payrollTable #fileCol a {
+
+#fileCol a {
     color: var(--purple);
     text-decoration: underline solid var(--purple);
     text-underline-offset: 3px;
     padding: 2px 10px;
 }
 
-.payrollTable #fileCol a:hover {
+#fileCol a:hover {
     background-color: var(--dark-purple-color);
     color: var(--forWhiteText);
     transition: 0.3s;
     border-radius: 5px;
+}
+
+.forFilter {
+    display: flex;
+}
+
+.forFilter .InputOption {
+    width: 100%;
+}
+
+
+
+/* Apply Leave */
+.leaveTable #dateCol,
+.leaveTable #statusCol {
+    text-align: center;
+}
+
+.fc-direction-ltr .fc-daygrid-event .fc-event-time {
+    display: none;
+}
+
+.fc .fc-toolbar-title {
+    font-size: 1.2em;
+    margin: 0;
+    font-weight: 800;
+    font-family: "Poppins", sans-serif;
+}
+
+.fc .fc-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.fc .fc-scrollgrid-liquid {
+    height: 90%;
+    background-color: #fff;
+}
+
+#calendar {
+    width: 80%;
+    margin: 0;
+
 }
 
 
@@ -737,6 +835,26 @@ select.maritalOptions {
 .tox-promotion,
 .tox-statusbar__right-container {
     display: none !important;
+}
+
+
+
+/* Setting */
+.tab_btn {
+    display: flex;
+    justify-content: space-between;
+}
+
+.tab_btn .tablinks {
+    width: 100%;
+    background-color: var(--purple-color);
+    padding: 0.8rem 0;
+    cursor: pointer;
+    border: solid 1px var(--dark-purple-color);
+    text-align: center;
+    font-weight: bold;
+
+    transition: 0.3s;
 }
 
 /* Animation */
