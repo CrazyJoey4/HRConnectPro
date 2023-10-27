@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     </td>
                     <td id="statusCol" style="background: ${statusColor}">${leaveStatus}</td>
                     <td class="actioncol" id="actioncol1"><button class="editbtn" style="background: var(--forGreenBTN)" onclick="approveLeave('${leaveApplyID}')"><i class="fas fa-check"></i></button></td>
-                    <td class="actioncol" id="actioncol2"><button class="editbtn" style="background: var(--forRedBG)" onclick="rejectLeave('${leaveApplyID}')"><i class="fas fa-times"></i></button></td>
+                    <td class="actioncol" id="actioncol2"><button class="editbtn" style="background: var(--forRedBG)" onclick="openRejectOverlay('${leaveApplyID}')"><i class="fas fa-times"></i></button></td>
                 `;
                 });
             }
@@ -317,19 +317,17 @@ window.approveLeave = async function (leaveApplyID) {
 }
 
 // Function to open the reject overlay form
-function openRejectOverlay(leaveApplyID) {
+window.openRejectOverlay = function (leaveApplyID) {
     document.getElementById("rejectReason").value = "";
     document.getElementById("overlay").style.display = "block";
-}
 
-// Function to close the reject overlay form
-function closeRejectOverlay() {
-    document.getElementById("overlay").style.display = "none";
+    const leaveApplyId = leaveApplyID;
+    document.getElementById("leaveApplyID").value = leaveApplyId;
 }
 
 // To reject leave
-window.rejectLeave = async function (event, leaveApplyID) {
-    openRejectOverlay(leaveApplyID);
+window.rejectLeave = async function (event) {
+    event.preventDefault();
 
     const reason = document.getElementById("rejectReason").value.trim();
 
@@ -338,8 +336,10 @@ window.rejectLeave = async function (event, leaveApplyID) {
         return;
     }
 
+    const leaveApplyId = document.getElementById("leaveApplyID").value;
+
     const leaveRef = collection(firestore, 'leaveApply');
-    const q = query(leaveRef, where('leaveApply_id', '==', leaveApplyID));
+    const q = query(leaveRef, where('leaveApply_id', '==', leaveApplyId));
 
     getDocs(q)
         .then((querySnapshot) => {
@@ -351,7 +351,7 @@ window.rejectLeave = async function (event, leaveApplyID) {
                         reject_desc: reason,
                     })
                         .then(() => {
-                            console.log("Leave rejected successfully");
+                            alert("Leave rejected successfully");
                             closeRejectOverlay();
                             toRefresh();
                         })

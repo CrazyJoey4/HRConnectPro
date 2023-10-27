@@ -63,7 +63,7 @@
                     <th class="dateCol">Start Date</th>
                     <th class="dateCol">End Date</th>
                     <th class="statusCol">Status</th>
-                    <th class="remarkCol">Remark</th> 
+                    <th class="remarkCol">Remark</th>
                 </tr>
             </table>
         </div>
@@ -76,16 +76,20 @@
 
                 <hr style="border-bottom:2px solid grey;">
 
+                <div style="display:block">
+                    <input type="text" name="leaveApplyID" id="leaveApplyID">
+                </div>
+
                 <div class="InputText">
-                    <label for="rejectReason">Reason for Reject :</label>
-                    <textarea id="rejectReason" placeholder="Enter reason for rejection"></textarea>
+                    <input type="text" name="rejectReason" id="rejectReason" required>
+                    <label>Reason for Reject</label><br>
                 </div>
 
                 <div class="addBtn-btn">
-                    <input type="submit" name="Add" id="Add" value="Add Leave" class="addBtn"
+                    <input type="submit" name="Add" id="Add" value="Submit" class="addBtn"
                         onclick="rejectLeave(event)">
 
-                    <button type="reset" class="cancelbtn" onclick="off()">Cancel</button>
+                    <button type="reset" class="cancelbtn" onclick="closeRejectOverlay()">Cancel</button>
                 </div>
             </form>
         </div>
@@ -114,6 +118,12 @@
                 approvedTable.style.display = "none";
                 rejectedTable.style.display = "block";
             }
+        }
+
+        // Function to close the reject overlay form
+        function closeRejectOverlay() {
+            document.getElementById("overlayBg").style.display = "none";
+            document.getElementById("overlay").style.display = "none";
         }
     </script>
 </body>

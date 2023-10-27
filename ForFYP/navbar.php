@@ -53,8 +53,8 @@
                 <li><a href="viewPayrollPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'viewPayrollPage.php')
                     echo 'class="active"'; ?>><span class="fa fa-wallet"></span> Payroll </a></li>
 
-                <li><a href="addfeedbackPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'addfeedbackPage.php')
-                    echo 'class="active"'; ?>><span class="fa fa-comment-dots"></span> Feedback </a></li>
+                <!-- <li><a href="addfeedbackPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'addfeedbackPage.php')
+                    echo 'class="active"'; ?>><span class="fa fa-comment-dots"></span> Feedback </a></li> -->
 
                 <li><a href="supportPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'supportPage.php')
                     echo 'class="active"'; ?>><span class="fa fa-question"></span> FAQs </a></li>
@@ -78,8 +78,8 @@
                     <li><a href="payrollPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'payrollPage.php')
                         echo 'class="active"'; ?>><span class="fa fa-wallet"></span> Payroll </a></li>
 
-                    <li><a href="feedbackPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'feedbackPage.php')
-                        echo 'class="active"'; ?>><span class="fa fa-comment-dots"></span> Feedback </a></li>
+                    <!-- <li><a href="feedbackPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'feedbackPage.php')
+                        echo 'class="active"'; ?>><span class="fa fa-comment-dots"></span> Feedback </a></li> -->
 
                     <li><a href="settingPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'settingPage.php')
                         echo 'class="active"'; ?>><span class="fa fa-cog"></span> Settings </a></li>

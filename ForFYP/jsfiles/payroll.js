@@ -34,25 +34,26 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             const usersRef = collection(firestore, 'users');
             const q = query(usersRef, where('uid', '==', payData.uid));
-            getDocs(q).then(async (userQuerySnapshot) => {
-                if (!userQuerySnapshot.empty) {
-                    const userData = userQuerySnapshot.docs[0].data();
-                    const depID = userData.dep_id;
-                    const userName = userData.name;
+            getDocs(q)
+                .then(async (userQuerySnapshot) => {
+                    if (!userQuerySnapshot.empty) {
+                        const userData = userQuerySnapshot.docs[0].data();
+                        const depID = userData.dep_id;
+                        const userName = userData.name;
 
-                    const payFile = payData.pay_doc_url;
-                    const payName = payData.pay_id;
+                        const payFile = payData.pay_doc_url;
+                        const payName = payData.pay_id;
 
-                    const depRef = collection(firestore, 'department');
-                    const q = query(depRef, where('dep_id', '==', depID));
-                    const depSnapshot = await getDocs(q);
+                        const depRef = collection(firestore, 'department');
+                        const q = query(depRef, where('dep_id', '==', depID));
+                        const depSnapshot = await getDocs(q);
 
-                    if (!depSnapshot.empty) {
-                        const depData = depSnapshot.docs[0].data();
-                        const depName = depData.dep_name;
+                        if (!depSnapshot.empty) {
+                            const depData = depSnapshot.docs[0].data();
+                            const depName = depData.dep_name;
 
-                        const newRow = payrollTable.insertRow();
-                        newRow.innerHTML = `
+                            const newRow = payrollTable.insertRow();
+                            newRow.innerHTML = `
                             <td>${payData.uid}</td>
                             <td id="nameCol">${userName}</td>
                             <td>${depName}</td>
@@ -61,9 +62,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                             <td class="actioncol" id="actioncol1"><button class="editbtn" onclick="editPay('${payData.pay_id}')"><i class='material-icons'>edit</i></button></td>
                             <td class="actioncol" id="actioncol2"><button class="editbtn" onclick="deletePay('${payData.pay_id}')"><i class='material-icons'>delete</i></button></td>
                         `;
+                        }
                     }
-                }
-            });
+                });
         });
     }
 });

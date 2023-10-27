@@ -124,6 +124,16 @@ input::file-selector-button:hover {
     background-color: var(--dark-purple-color);
 }
 
+#manager:focus+label,
+#manager:not(:placeholder-shown)+label,
+#projectName:focus+label,
+#projectName:not(:placeholder-shown)+label,
+#editManager:focus+label,
+#editManager:not(:placeholder-shown)+label {
+    transform: translateY(-1.6rem);
+    transition: all 0.3s ease;
+}
+
 /* End of Input styles */
 
 
@@ -192,6 +202,10 @@ input::file-selector-button:hover {
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
     opacity: 1;
     transition: 0.3s;
+}
+
+.removeBtn {
+    margin-top: 2rem;
 }
 
 /* End of button styles */
@@ -338,6 +352,14 @@ input::-webkit-inner-spin-button {
     margin-top: 3rem;
 }
 
+.overlay .InputTextarea {
+    background: transparent;
+    height: 6.5rem;
+    width: 100%;
+    position: relative;
+    margin-top: 1rem;
+}
+
 .overlay .InputText input {
     height: 100%;
     width: 100%;
@@ -348,6 +370,15 @@ input::-webkit-inner-spin-button {
     color: var(--dark-blue-color);
     font-size: 1.2rem;
     outline: none;
+}
+
+.overlay .InputTextarea textarea {
+    background-color: transparent;
+    display: block;
+    resize: none;
+    overflow-y: auto;
+    width: 100%;
+    padding: 0.5rem;
 }
 
 .overlay .InputText label {
@@ -756,8 +787,55 @@ select.maritalOptions {
 
 
 /* Performance */
+.employeeSelect_flex {
+    display: flex;
+    gap: 15px;
+    max-height: 200px;
+    overflow: auto;
+}
 
+.employeeSelect_flex .selectWrap {
+    width: 100%;
+}
 
+.employeeSelect_flex .showNames #selectedEmployeeNames {
+    padding: 0 20px;
+}
+
+select#employeesSelect {
+    width: 100% !important;
+}
+
+#employeesSelect li {
+    list-style: none;
+}
+
+.employeeSelect_flex .selectAllBtn {
+    text-transform: capitalize;
+    padding: 0.3rem 3rem;
+    background-color: var(--light-purple);
+    border-radius: 5px;
+}
+
+.employeeSelect_flex .selectAllBtn:hover {
+    text-transform: capitalize;
+    background-color: var(--blue-color);
+}
+
+input.checkbox-option {
+    margin: 0 10px;
+    transform: scale(1.2);
+    outline: solid 1px var(--dark-purple-color);
+}
+
+.evaluationForm {
+    max-height: 700px;
+    overflow-y: auto;
+}
+
+.dyQuestion {
+    margin-top: 10px !important;
+}
 
 
 /* Payroll */
@@ -793,7 +871,7 @@ select.maritalOptions {
 
 /* Apply Leave */
 .leaveTable #dateCol,
-.leaveTable #statusCol {
+#statusCol {
     text-align: center;
 }
 
@@ -821,10 +899,20 @@ select.maritalOptions {
 
 #calendar {
     width: 80%;
-    margin: 0;
-
+    margin: 0 auto;
 }
 
+.projectForm {
+    top: 5%;
+    max-height: 900px;
+    overflow-y: auto;
+}
+
+.employeeSelect_flex>div {
+    border: solid 1.5px var(--purple);
+    border-radius: 5px;
+    padding: 5px;
+}
 
 
 /* FAQ / Support */

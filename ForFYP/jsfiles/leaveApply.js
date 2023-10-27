@@ -21,26 +21,27 @@ const storage = getStorage(firebaseApp);
 
 var userId = localStorage.getItem('userId');
 
-// Fetch Leave details
+// Fetch Active Leave details
 document.addEventListener("DOMContentLoaded", async function () {
     window.fetchLeaveDetails = async function () {
         const leaveTable = document.getElementById('leaveTable');
+        const allLeaveTable = document.getElementById('leaveAllTable');
 
         const leaveRef = collection(firestore, 'leaveApply');
-        const q = query(leaveRef, where('uid', '==', userId));
+        const q = query(leaveRef, where('uid', '==', userId), orderBy('leave_type', 'asc'), orderBy('approve_status', 'asc'), orderBy('start_date', 'asc'));
         const leaveSnapshot = await getDocs(q);
 
         if (!leaveSnapshot.empty) {
             leaveSnapshot.forEach(async (doc) => {
                 const leaveAData = doc.data();
                 const leaveApplyID = leaveAData.leaveApply_id;
-                const leaveName = await getEmployeeName(leaveAData.uid);
                 const leaveType = await getLeaveName(leaveAData.leave_type);
                 const leaveStartDate = leaveAData.start_date;
                 const leaveEndDate = leaveAData.end_date;
                 const leaveStatus = leaveAData.approve_status;
                 const leaveDuration = getLeaveDuration(leaveStartDate, leaveEndDate);
                 const leaveDoc = leaveAData.leave_doc;
+                const leaveReason = leaveAData.reject_desc;
 
                 let statusColor = '';
                 switch (leaveStatus) {
@@ -58,8 +59,75 @@ document.addEventListener("DOMContentLoaded", async function () {
                         break;
                 }
 
-                // Add the fetched data to the table
-                const newRow = leaveTable.insertRow();
+                if(isDateInFuture(leaveEndDate)){
+                    const newRow = leaveTable.insertRow();
+                    newRow.innerHTML = `
+                        <td id="nameCol">${leaveType}</td>
+                        <td id="dateCol">${leaveDuration} day(s)</td>
+                        <td id="dateCol">${leaveStartDate}</td>
+                        <td id="dateCol">${leaveEndDate}</td>
+                        <td id="statusCol" style="background: ${statusColor}">${leaveStatus}</td>
+                        <td id="fileCol">
+                            ${leaveDoc ? `<a href="${leaveDoc}" target="_blank" rel="noopener noreferrer">View Document</a>` : ''}
+                        </td>
+                        <td class="actioncol" id="actioncol1">
+                            ${leaveStatus === 'Rejected'
+                            ? ` Reason </td>
+                            <td id="statusCol" style="background: ${statusColor}">${leaveReason}</td>`
+                            : `<button class="editbtn" onclick="deleteLeave('${leaveApplyID}')"><i class='material-icons'>delete</i></button>`}
+                        </td>
+                    `;
+                }
+            });
+        }
+    }
+});
+
+// For comparing date
+function isDateInFuture(dateString) {
+    const currentDate = new Date();
+    const endDate = new Date(dateString); 
+    return endDate > currentDate;
+}
+
+// Fetch All history Leave details
+document.addEventListener("DOMContentLoaded", async function () {
+    window.fetchAllLeaveDetails = async function () {
+        const allLeaveTable = document.getElementById('leaveAllTable');
+
+        const leaveRef = collection(firestore, 'leaveApply');
+        const q = query(leaveRef, where('uid', '==', userId), orderBy('leave_type', 'asc'), orderBy('approve_status', 'asc'), orderBy('start_date', 'asc'));
+        const leaveSnapshot = await getDocs(q);
+
+        if (!leaveSnapshot.empty) {
+            leaveSnapshot.forEach(async (doc) => {
+                const leaveAData = doc.data();
+                const leaveApplyID = leaveAData.leaveApply_id;
+                const leaveType = await getLeaveName(leaveAData.leave_type);
+                const leaveStartDate = leaveAData.start_date;
+                const leaveEndDate = leaveAData.end_date;
+                const leaveStatus = leaveAData.approve_status;
+                const leaveDuration = getLeaveDuration(leaveStartDate, leaveEndDate);
+                const leaveDoc = leaveAData.leave_doc;
+                const leaveReason = leaveAData.reject_desc;
+
+                let statusColor = '';
+                switch (leaveStatus) {
+                    case 'Approved':
+                        statusColor = 'var(--forGreenBG)';
+                        break;
+                    case 'Pending':
+                        statusColor = 'var(--forBlueBG)';
+                        break;
+                    case 'Rejected':
+                        statusColor = 'var(--forRedBG)';
+                        break;
+                    default:
+                        statusColor = 'black';
+                        break;
+                }
+
+                const newRow = allLeaveTable.insertRow();
                 newRow.innerHTML = `
                     <td id="nameCol">${leaveType}</td>
                     <td id="dateCol">${leaveDuration} day(s)</td>
@@ -69,7 +137,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                     <td id="fileCol">
                         ${leaveDoc ? `<a href="${leaveDoc}" target="_blank" rel="noopener noreferrer">View Document</a>` : ''}
                     </td>
-                    <td class="actioncol" id="actioncol1"><button class="editbtn" onclick="deleteLeave('${leaveApplyID}')"><i class='material-icons'>delete</i></button></td>
+                    <td class="descCol" id="descCol">
+                        ${leaveStatus === 'Rejected'
+                        ? ` Reason </td>
+                        <td id="statusCol" style="background: ${statusColor}">${leaveReason}</td>`
+                        : ''}
+                    </td>
                 `;
             });
         }
@@ -378,9 +451,6 @@ async function fetchLeaveEventsFromFirebase() {
 // Fetch and display leave events
 fetchLeaveEventsFromFirebase();
 
-
-// Attach an event listener to the search input field
-document.getElementById("searchInput").addEventListener("keyup", filterTable);
 
 function toRefresh() {
     setTimeout(() => {
