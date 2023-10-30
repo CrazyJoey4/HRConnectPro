@@ -234,10 +234,9 @@ window.editPay = async function (payId) {
         } else {
             console.log('User document does not exist');
         }
-    })
-        .catch((error) => {
-            console.log('Error fetching user profile:', error);
-        });
+    }).catch((error) => {
+        console.log('Error fetching user profile:', error);
+    });
 }
 
 // For Save edited details

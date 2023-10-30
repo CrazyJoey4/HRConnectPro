@@ -205,7 +205,8 @@ input::file-selector-button:hover {
 }
 
 .removeBtn {
-    margin-top: 2rem;
+    margin: 2rem 0;
+    justify-content: flex-start;
 }
 
 /* End of button styles */

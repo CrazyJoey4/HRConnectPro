@@ -76,7 +76,7 @@
 
                 <hr style="border-bottom:2px solid grey;">
 
-                <div style="display:block">
+                <div style="display:none">
                     <input type="text" name="leaveApplyID" id="leaveApplyID">
                 </div>
 
