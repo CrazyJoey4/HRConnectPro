@@ -36,7 +36,7 @@
                     <th class="descCol">Description</th>
                     <th class="docCol">Document</th>
                     <th class="statusCol">Status</th>
-                    <th colspan='2'>Action</th>
+                    <th>Action</th>
                 </tr>
             </table>
         </div>

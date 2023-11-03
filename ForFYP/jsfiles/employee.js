@@ -233,7 +233,7 @@ window.addEmp = async function (event) {
 
     // Clear form
     document.getElementById("overlay").style.display = "none";
-    document.getElementById("name").value = "";
+    document.getElementById("UserName").value = "";
     document.getElementById("email").value = "";
     document.getElementById("phoneNo").value = "";
     document.getElementById("salary").value = "";

@@ -56,8 +56,8 @@
                 <!-- <li><a href="addfeedbackPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'addfeedbackPage.php')
                     echo 'class="active"'; ?>><span class="fa fa-comment-dots"></span> Feedback </a></li> -->
 
-                <li><a href="supportPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'supportPage.php')
-                    echo 'class="active"'; ?>><span class="fa fa-question"></span> FAQs </a></li>
+                <!-- <li><a href="supportPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'supportPage.php')
+                    echo 'class="active"'; ?>><span class="fa fa-question"></span> FAQs </a></li> -->
 
             </ul>
             <div id="management_part" style="display:none">

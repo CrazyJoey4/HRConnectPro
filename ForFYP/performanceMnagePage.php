@@ -36,7 +36,7 @@
             <table class="detailsTable projectTable" id="projectTable">
                 <tr>
                     <th class="projectCol">Project</th>
-                    <th class="rateCol">Project Manager</th>
+                    <th class="nameCol">Project Manager</th>
                     <th class="dateCol">Start Date</th>
                     <th class="dateCol">End Date</th>
                     <th class="statusCol">Status</th>
@@ -301,9 +301,6 @@
             updateQuestionNumbers();
         }
         updateQuestionNumbers();
-
-
-
     </script>
 
 </body>

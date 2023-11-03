@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         querySnapshot.forEach(async (doc) => {
             const projectData = doc.data();
+            const managerName = await getManagerName(projectData.project_manager);
 
             // Check if there are related evaluation questions
             const hasEvaluationQuestions = await checkForEvaluationQuestions(projectData.project_id);
@@ -36,13 +37,13 @@ document.addEventListener("DOMContentLoaded", async function () {
             const newRow = projectTable.insertRow();
             newRow.innerHTML = `
                 <td>${projectData.project_name}</td>
-                <td id="nameCol">${projectData.project_manager}</td>
+                <td id="nameCol">${managerName}</td>
                 <td id="dateCol">${projectData.start_date}</td>
                 <td id="dateCol">${projectData.end_date}</td>
                 <td id="statusCol">${projectData.project_status}</td>
                 ${hasEvaluationQuestions ? `
                 <td class="actioncol" id="actioncol3"><button class="editbtn" onclick="generatePDF('${projectData.project_id}')">View Evaluations</button></td>
-                ` : '<td>Please update evaluation questions</td>'}
+                ` : '<td id="warningCol">Please update evaluation questions</td>'}
                 <td class="actioncol" id="actioncol1"><button class="editbtn" onclick="evaluationForm('${projectData.project_id}')"><i class='material-icons'>description</i></button></td>
                 <td class="actioncol" id="actioncol1"><button class="editbtn" onclick="editProject('${projectData.project_id}')"><i class='material-icons'>edit</i></button></td>
                 <td class="actioncol" id="actioncol2"><button class="editbtn" onclick="deleteProject('${projectData.project_id}')"><i class='material-icons'>delete</i></button></td>
@@ -54,6 +55,20 @@ document.addEventListener("DOMContentLoaded", async function () {
     async function checkForEvaluationQuestions(projectID) {
         const querySnapshot = await getDocs(query(collection(firestore, 'evaluation'), where('project_id', '==', projectID)));
         return !querySnapshot.empty;
+    }
+
+    // Function to retrieve the manager's name using the manager ID
+    async function getManagerName(managerID) {
+        const usersRef = collection(firestore, 'users');
+        const q = query(usersRef, where('uid', '==', managerID));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            const userData = querySnapshot.docs[0].data();
+            return userData.name;
+        } else {
+            return 'Manager Not Found';
+        }
     }
 });
 
@@ -232,8 +247,8 @@ function updateSelectedEmployees() {
 
 // For genetrate project ID
 async function generateNewID() {
-    const PaysRef = collection(firestore, 'project');
-    const querySnapshot = await getDocs(query(PaysRef, orderBy('project_id', 'desc'), limit(1)));
+    const ProjectRef = collection(firestore, 'project');
+    const querySnapshot = await getDocs(query(ProjectRef, orderBy('project_id', 'desc'), limit(1)));
 
     let newUID = 'P000001';
 
@@ -253,8 +268,8 @@ async function generateNewID() {
 
 // For genetrate evaluation ID
 async function generateNewEvaID() {
-    const PaysRef = collection(firestore, 'evaluation');
-    const querySnapshot = await getDocs(query(PaysRef, orderBy('eva_id', 'desc'), limit(1)));
+    const EvaluateRef = collection(firestore, 'evaluation');
+    const querySnapshot = await getDocs(query(EvaluateRef, orderBy('eva_id', 'desc'), limit(1)));
 
     let newUID = 'E000001';
 
@@ -274,8 +289,8 @@ async function generateNewEvaID() {
 
 // For genetrate performance ID
 async function generateNewPerID() {
-    const PaysRef = collection(firestore, 'performance');
-    const querySnapshot = await getDocs(query(PaysRef, orderBy('per_id', 'desc'), limit(1)));
+    const PerRef = collection(firestore, 'performance');
+    const querySnapshot = await getDocs(query(PerRef, orderBy('per_id', 'desc'), limit(1)));
 
     let newUID = 'PF000001';
 
@@ -345,6 +360,8 @@ window.addProject = async function (event) {
             // Create performance records for each team member
             const performancePromises = selectedEmployees.map(async employeeID => {
                 const performanceID = await generateNewPerID();
+                const unsubmitID = selectedEmployees.filter(id => id !== employeeID);
+
                 return addDoc(collection(firestore, 'performance'), {
                     per_id: performanceID,
                     project_id: ProjectID,
@@ -352,6 +369,7 @@ window.addProject = async function (event) {
                     manager_id: projectManager,
                     evaluation_rate: 0,
                     evaluation_review: '',
+                    unsubmitID: unsubmitID,
                 }).then(() => {
                     console.log("Performance record created for employee: " + employeeID);
                 }).catch(error => {
@@ -389,105 +407,6 @@ window.addProject = async function (event) {
         employeesSelect.selectedIndex = -1;
     }
 }
-
-
-// For the create Evaluation button
-window.evaluationForm = function (projectId) {
-    const overlay = document.getElementById('overlay3');
-    overlay.style.display = 'block';
-
-    const evaForm = document.getElementById('evaluationQuestions');
-    evaForm.innerHTML = '';
-
-    // Set the project name in the form
-    const projectID = document.getElementById('evaProjectID');
-    projectID.value = projectId;
-
-    const projectNameField = document.getElementById('projectName');
-
-    const projectRef = collection(firestore, 'project');
-    const q = query(projectRef, where('project_id', '==', projectId));
-
-    getDocs(q).then((querySnapshot) => {
-        if (!querySnapshot.empty) {
-            const projectData = querySnapshot.docs[0].data();
-            const projectName = projectData.project_name;
-            projectNameField.value = projectName;
-        } else {
-            console.log('Project document does not exist');
-        }
-    }).catch((error) => {
-        console.log('Error fetching project profile:', error);
-    });
-}
-
-// For saving evaluation criteria
-window.saveEvaluation = async function (event) {
-    event.preventDefault();
-
-    const projectID = document.getElementById('evaProjectID').value;
-    const evaluationQuestions = document.getElementById('evaluationQuestions');
-    const questionDivs = evaluationQuestions.getElementsByClassName('question');
-
-    let hasEmptyFields = false;
-
-    const existingQuestionsQuery = query(
-        collection(firestore, 'evaluation'),
-        where('project_id', '==', projectID)
-    );
-
-    const existingQuestionsSnapshot = await getDocs(existingQuestionsQuery);
-
-    if (existingQuestionsSnapshot.size > 0) {
-        const deleteConfirmation = confirm('There are existing questions. Do you want to replace them with new questions?');
-
-        if (!deleteConfirmation) {
-            return;
-        }
-
-        // User confirmed, delete existing questions
-        existingQuestionsSnapshot.forEach(async (doc) => {
-            await deleteDoc(doc.ref);
-        });
-    }
-
-    // Add new questions
-    for (let index = 0; index < questionDivs.length; index++) {
-        const question = questionDivs[index];
-        const questionInput = question.querySelector('input[name="question[]"]');
-        const weightInput = question.querySelector('input[name="weight[]"]');
-        const questionText = questionInput.value.trim();
-        const weight = parseInt(weightInput.value);
-
-        if (questionText === '' || isNaN(weight) || weight < 1 || weight > 5) {
-            hasEmptyFields = true;
-            console.error(`Question ${index + 1} has invalid or empty fields.`);
-        } else {
-            generateNewEvaID().then(async (eva_id) => {
-                await addDoc(collection(firestore, "evaluation"), {
-                    eva_id: eva_id,
-                    project_id: projectID,
-                    eva_question: questionText,
-                    eva_weight: weight,
-                    question_number: index + 1,
-                });
-            });
-        }
-    }
-
-    if (hasEmptyFields) {
-        console.log('Please fill in all fields with valid data.');
-        alert('Please fill in all fields with valid data.');
-        return;
-    }
-
-    console.log('Questions updated successfully.');
-    alert('Questions updated successfully.');
-    toRefresh();
-}
-
-
-
 
 // For Edit project
 window.editProject = async function (projectID) {
@@ -599,7 +518,7 @@ window.saveProjectChanges = async function (event) {
     toRefresh();
 }
 
-
+// For delete project
 window.deleteProject = async function (projectId) {
     if (confirm("Are you sure you want to delete this Project?")) {
         try {
@@ -638,6 +557,107 @@ window.deleteProject = async function (projectId) {
         }
     }
 }
+
+
+
+// For the create Evaluation button
+window.evaluationForm = function (projectId) {
+    const overlayBg = document.getElementById('overlayBg');
+    const overlay = document.getElementById('overlay3');
+    overlayBg.style.display = 'block';
+    overlay.style.display = 'block';
+
+    const evaForm = document.getElementById('evaluationQuestions');
+    evaForm.innerHTML = '';
+
+    // Set the project name in the form
+    const projectID = document.getElementById('evaProjectID');
+    projectID.value = projectId;
+
+    const projectNameField = document.getElementById('projectName');
+
+    const projectRef = collection(firestore, 'project');
+    const q = query(projectRef, where('project_id', '==', projectId));
+
+    getDocs(q).then((querySnapshot) => {
+        if (!querySnapshot.empty) {
+            const projectData = querySnapshot.docs[0].data();
+            const projectName = projectData.project_name;
+            projectNameField.value = projectName;
+        } else {
+            console.log('Project document does not exist');
+        }
+    }).catch((error) => {
+        console.log('Error fetching project profile:', error);
+    });
+}
+
+// For saving evaluation criteria
+window.saveEvaluation = async function (event) {
+    event.preventDefault();
+
+    const projectID = document.getElementById('evaProjectID').value;
+    const evaluationQuestions = document.getElementById('evaluationQuestions');
+    const questionDivs = evaluationQuestions.getElementsByClassName('question');
+
+    let hasEmptyFields = false;
+
+    const existingQuestionsQuery = query(
+        collection(firestore, 'evaluation'),
+        where('project_id', '==', projectID)
+    );
+
+    const existingQuestionsSnapshot = await getDocs(existingQuestionsQuery);
+
+    // Add new questions
+    for (let index = 0; index < questionDivs.length; index++) {
+        const question = questionDivs[index];
+        const questionInput = question.querySelector('input[name="question[]"]');
+        const weightInput = question.querySelector('input[name="weight[]"]');
+        const questionText = questionInput.value.trim();
+        const weight = parseInt(weightInput.value);
+
+        if (questionText === '' || isNaN(weight) || weight < 1 || weight > 5) {
+            hasEmptyFields = true;
+
+            alert('Please fill in all fields with valid data.');
+            console.error(`Question ${index + 1} has invalid or empty fields.`);
+
+            return;
+        } else {
+            generateNewEvaID().then(async (eva_id) => {
+                const newEva_id = `${eva_id}_${index + 1}`;
+                console.log(newEva_id);
+
+                await addDoc(collection(firestore, "evaluation"), {
+                    eva_id: newEva_id,
+                    project_id: projectID,
+                    eva_question: questionText,
+                    eva_weight: weight,
+                    question_number: index + 1,
+                });
+            });
+        }
+    }
+
+    if (existingQuestionsSnapshot.size > 0) {
+        const deleteConfirmation = confirm('There are existing questions. Do you want to replace them with new questions?');
+
+        if (!deleteConfirmation) {
+            return;
+        }
+
+        // User confirmed, delete existing questions
+        existingQuestionsSnapshot.forEach(async (doc) => {
+            await deleteDoc(doc.ref);
+        });
+    }
+
+    console.log('Questions updated successfully.');
+    alert('Questions updated successfully.');
+    toRefresh();
+}
+
 
 
 // For Search
@@ -741,8 +761,6 @@ window.generatePDF = async function (projectID) {
     });
 }
 
-
-
 async function fetchEvaluationQuestions(projectID) {
     const questions = [];
 
@@ -755,4 +773,3 @@ async function fetchEvaluationQuestions(projectID) {
 
     return questions;
 }
-
