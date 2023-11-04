@@ -11,58 +11,36 @@
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" />
 
-    <style type="text/css">
-        #results {
-            padding: 20px;
-            border: 1px solid;
-            background: #ccc;
-        }
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.25/webcam.min.js"></script>
+    <script src="jsfiles/faceapi/face-api.min.js"></script>
+
+    <script defer src="jsfiles/faceapi/face-api.min.js"></script>
+    <script defer src="jsfiles/attendance.js"></script>
 
 </head>
 
 <body>
     <div class="wrap">
         <h1>Attendance</h1>
+        <div class="toClockWrap">
+            <div class="videoCapture">
+                <video id="video" width="600" height="450" autoplay></video>
+                <canvas id="canvas" width="600" height="450"></canvas>
+            </div>
 
-        <div class="container">
-            <form method="POST" action="storeImage.php">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div id="my_camera"></div>
-                        <br />
-                        <input type=button value="Take Snapshot" onClick="take_snapshot()">
-                        <input type="hidden" name="image" class="image-tag">
-                    </div>
-                    <div class="col-md-6">
-                        <div id="results">Your captured image will appear here...</div>
-                    </div>
-                    <div class="col-md-12 text-center">
-                        <br />
-                        <button class="btn btn-success">Submit</button>
-                    </div>
-                </div>
-            </form>
+            <div class="buttonGroup">
+                <button class='add_btn clock_btn clockIn' id="clockInButton">Clock In &nbsp;<i
+                        class="fas fa-clock"></i></button>
+                <button class='add_btn clock_btn clockOut' id="clockInButton">Clock Out &nbsp;<i
+                        class="far fa-clock"></i></button>
+            </div>
         </div>
+
+
+
     </div>
 
-    <script language="JavaScript">
-        Webcam.set({
-            width: 490,
-            height: 390,
-            image_format: 'jpeg',
-            jpeg_quality: 90
-        });
 
-        Webcam.attach('#my_camera');
-
-        function take_snapshot() {
-            Webcam.snap(function (data_uri) {
-                $(".image-tag").val(data_uri);
-                document.getElementById('results').innerHTML = '<img src="' + data_uri + '"/>';
-            });
-        }
-    </script>
 </body>
 
 </html>
