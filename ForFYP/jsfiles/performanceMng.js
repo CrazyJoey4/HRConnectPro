@@ -57,22 +57,22 @@ document.addEventListener("DOMContentLoaded", async function () {
         return !querySnapshot.empty;
     }
 
-    // Function to retrieve the manager's name using the manager ID
-    async function getManagerName(managerID) {
-        const usersRef = collection(firestore, 'users');
-        const q = query(usersRef, where('uid', '==', managerID));
-        const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-            const userData = querySnapshot.docs[0].data();
-            return userData.name;
-        } else {
-            return 'Manager Not Found';
-        }
-    }
 });
 
 
+// Function to retrieve the manager's name using the manager ID
+async function getManagerName(managerID) {
+    const usersRef = collection(firestore, 'users');
+    const q = query(usersRef, where('uid', '==', managerID));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+        const userData = querySnapshot.docs[0].data();
+        return userData.name;
+    } else {
+        return 'Manager Not Found';
+    }
+}
 
 // For fetching departments
 async function generateDep() {
@@ -360,10 +360,11 @@ window.addProject = async function (event) {
             // Create performance records for each team member
             const performancePromises = selectedEmployees.map(async employeeID => {
                 const performanceID = await generateNewPerID();
-                const unsubmitID = selectedEmployees.filter(id => id !== employeeID);
+                const per_id = `${performanceID}_${employeeID}`;
+                const unsubmitID = [...selectedEmployees, projectManager].filter(id => id !== employeeID);
 
                 return addDoc(collection(firestore, 'performance'), {
-                    per_id: performanceID,
+                    per_id: per_id,
                     project_id: ProjectID,
                     uid: employeeID,
                     manager_id: projectManager,
@@ -419,9 +420,11 @@ window.editProject = async function (projectID) {
                 const doc = querySnapshot.docs[0];
                 const projectData = doc.data();
 
+                const managerName = await getManagerName(projectData.project_manager);
+
                 document.getElementById("projectID").value = projectID;
                 document.getElementById("editName").value = projectData.project_name;
-                document.getElementById("editManager").value = projectData.project_manager;
+                document.getElementById("editManager").value = managerName;
                 document.getElementById("editDescription").value = projectData.project_desc;
                 document.getElementById("statusOption").value = projectData.project_status;
 
@@ -473,6 +476,8 @@ window.editProject = async function (projectID) {
 
 // For Save edited project details
 window.saveProjectChanges = async function (event) {
+    event.preventDefault();
+
     const projectID = document.getElementById("projectID").value;
     const newProjectName = document.getElementById("editName").value;
     const newProjectManager = document.getElementById("editManager").value;

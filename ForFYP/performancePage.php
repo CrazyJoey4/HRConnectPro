@@ -59,7 +59,7 @@
                 <tr>
                     <th class="nameCol">Project Name</th>
                     <th class="rateCol">Performance Rating</th>
-                    <th class="descCol">Supervisor's Comments</th>
+                    <th class="descCol">Manager's Comments</th>
                 </tr>
             </table>
         </div>

@@ -18,7 +18,7 @@ const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
 
 var userId = localStorage.getItem('userId');
-// var userId = "EMP_005";
+var userId = "EMP_005";
 
 
 
@@ -49,43 +49,50 @@ document.addEventListener("DOMContentLoaded", async function () {
             query(projectsRef, where('uid', 'array-contains', userId))
         );
 
-        // Merge the results
-        const projects = new Set();
+        // Create a map to store merged project data
+        const mergedProjects = new Map();
 
+        // Function to add a project to the mergedProjects map
+        function addProjectToMerged(project) {
+            if (!mergedProjects.has(project.project_id)) {
+                mergedProjects.set(project.project_id, [project]);
+            } else {
+                mergedProjects.get(project.project_id).push(project);
+            }
+        }
+
+        // Process querySnapshotManager
         querySnapshotManager.forEach((projectDoc) => {
-            projects.add(projectDoc.data());
+            const projectData = projectDoc.data();
+            addProjectToMerged(projectData);
         });
 
+        // Process querySnapshotUnsubmitID
         querySnapshotUnsubmitID.forEach((projectDoc) => {
-            projects.add(projectDoc.data());
+            const projectData = projectDoc.data();
+            addProjectToMerged(projectData);
         });
 
-        // Go through the merged projects and add to the table
-        projects.forEach(async (projectData) => {
-            const projectId = projectData.project_id;
-            const endDate = new Date(projectData.end_date);
+        // Iterate through merged projects and add to the table
+        mergedProjects.forEach(async (projects, projectId) => {
+            const mergedProjectData = projects[0];
 
-            const performanceQuerySnapshot = await getDocs(
-                query(performanceRef, where('unsubmitID', 'array-contains', userId))
-            );
-
-            const performance2QuerySnapshot = await getDocs(
-                query(performanceRef, where('manager_id', '==', userId))
-            );
+            const endDate = new Date(mergedProjectData.end_date);
 
             // Check if there are evaluation questions for the project
             const evaluationQuestionsExist = await doEvaluationQuestionsExist(projectId);
+            const submissionExist = await ifSubmitted(projectId, userId);
 
-            if ((endDate < currentDate) && (performanceQuerySnapshot.empty || performance2QuerySnapshot.empty)) {
-                if (evaluationQuestionsExist) {
-                    const managerData = await getUserData(projectData.project_manager);
+            if (endDate < currentDate) {
+                if (evaluationQuestionsExist && submissionExist) {
+                    const managerData = await getUserData(mergedProjectData.project_manager);
                     const row = evaluationTable.insertRow();
 
                     row.innerHTML = `
-                        <td class="nameCol">${projectData.project_name}</td>
+                        <td class="nameCol">${mergedProjectData.project_name}</td>
                         <td class="nameCol">${managerData}</td>
-                        <td class="dateCol">${projectData.start_date}</td>
-                        <td class="dateCol">${projectData.end_date}</td>
+                        <td class="dateCol">${mergedProjectData.start_date}</td>
+                        <td class="dateCol">${mergedProjectData.end_date}</td>
                         <td class="actioncol" id="actioncol1">
                             <button class="editbtn" onclick="fetchEvaluationQuestions('${projectId}')">
                                 <i class='material-icons'>edit</i>
@@ -105,8 +112,18 @@ document.addEventListener("DOMContentLoaded", async function () {
             return !querySnapshot.empty;
         }
 
+        // Function to check if user submitted evaluation
+        async function ifSubmitted(projectId, userId) {
+            const querySnapshot = await getDocs(
+                query(collection(firestore, 'performance'), where('unsubmitID', 'array-contains', userId), where('project_id', '==', projectId))
+            );
+
+            return !querySnapshot.empty;
+        }
+
     }
 });
+
 
 
 
@@ -127,27 +144,47 @@ document.addEventListener("DOMContentLoaded", async function () {
         // Query projects where the current user is a team member
         const projectsQuerySnapshot = await getDocs(query(projectsRef, where('uid', 'array-contains', userId)));
 
-        for (const projectDoc of projectsQuerySnapshot.docs) {
+        // Array to store promises
+        const fetchPromises = [];
+
+        projectsQuerySnapshot.forEach((projectDoc) => {
             const projectData = projectDoc.data();
-            const projectId = projectDoc.id;
+            const projectId = projectData.project_id;
 
-            // Query the performance collection for completed evaluations
-            const performanceQuerySnapshot = await getDocs(
-                query(performanceRef, where('project_id', '==', projectId), where('unsubmitID', 'array-contains', userId))
-            );
+            // Query the performance collection for completed evaluations for the current user
+            const performanceQuery = query(performanceRef, where('project_id', '==', projectId), where('uid', '==', userId));
 
-            // If there are no unfilled evaluations, add the project to the table
-            if (performanceQuerySnapshot.empty) {
-                const row = performanceTable.insertRow();
-                row.innerHTML = `
-                    <td class="nameCol">${projectData.project_name}</td>
-                    <td class="rateCol">${projectData.evaluation_rate}</td>
-                    <td class="descCol">${projectData.evaluation_review}</td>
-                `;
+            // Add the promise to the array
+            fetchPromises.push(getDocs(performanceQuery));
+        });
+
+        // Use Promise.all to fetch performance data for all projects
+        const performanceSnapshots = await Promise.all(fetchPromises);
+
+        performanceSnapshots.forEach(async (performanceQuerySnapshot, index) => {
+            if (!performanceQuerySnapshot.empty) {
+                const performanceData = performanceQuerySnapshot.docs[0].data();
+                const projectData = projectsQuerySnapshot.docs[index].data();
+
+                if (performanceData.evaluation_rate != 0 && performanceData.evaluation_rate != null) {
+                    const row = performanceTable.insertRow();
+                    row.innerHTML = `
+                        <td class="nameCol">${projectData.project_name}</td>
+                        <td class="rateCol">${performanceData.evaluation_rate}</td>
+                        ${performanceData.evaluation_review = "" ? `
+                        <td class="descCol">${performanceData.evaluation_review}</td>
+                        ` : '<td>Manager have not review yet</td>'}
+                    `;
+
+                }
+
             }
-        }
+        });
     }
 });
+
+
+
 
 
 // Function to get user data
@@ -165,7 +202,6 @@ async function getUserData(userId) {
     }
 }
 
-// For generate team members
 async function generateTeamMembers(projectID) {
     const memberSelect = document.getElementById("memberSelect");
     memberSelect.innerHTML = `<option value="">Select a Team Member</option>`;
@@ -182,15 +218,34 @@ async function generateTeamMembers(projectID) {
 
         for (const uid of teamMemberUIDs) {
             if (uid !== userId) {
-                const userName = await getUserData(uid);
-                const option = document.createElement("option");
-                option.value = uid;
-                option.text = userName;
-                memberSelect.appendChild(option);
+                const hasPerformanceRecord = await checkPerformanceRecord(projectID, uid);
+
+                if (hasPerformanceRecord) {
+                    const userName = await getUserData(uid);
+                    const option = document.createElement("option");
+                    option.value = uid;
+                    option.text = userName;
+                    memberSelect.appendChild(option);
+                }
             }
         }
     }
 }
+
+async function checkPerformanceRecord(projectID, uid) {
+    const performanceRef = collection(firestore, 'performance');
+    const performanceQuery = query(performanceRef, where('project_id', '==', projectID), where('uid', '==', uid));
+    const performanceQuerySnapshot = await getDocs(performanceQuery);
+
+    if (!performanceQuerySnapshot.empty) {
+        const performanceDoc = performanceQuerySnapshot.docs[0].data();
+        const unsubmitID = performanceDoc.unsubmitID;
+        return unsubmitID.includes(userId);
+    }
+
+    return false;
+}
+
 
 
 
@@ -263,23 +318,20 @@ window.fetchEvaluationQuestions = async function (projectId) {
     questionsContainer.appendChild(questionDiv);
 }
 
-
-
-// For the submit Evaluation button
+// For submit Evaluation
 window.addEvaluate = async function (event) {
     event.preventDefault();
 
     const projectID = document.getElementById('evaProjectID').value;
     const memberID = document.getElementById('memberSelect').value;
-
-    console.log(projectID);
-    console.log(memberID);
+    const managerCommentInput = document.getElementById('managerComment');
+    const managerComment = managerCommentInput ? managerCommentInput.value : '';
 
     let totalWeightedRating = 0;
     let totalWeight = 0;
 
     // Validate
-    if (memberSelect.value === '') {
+    if (memberID === '') {
         alert('Please select a team member.');
         return;
     }
@@ -318,6 +370,13 @@ window.addEvaluate = async function (event) {
         });
     });
 
+    // Include the managerComment if it exists
+    if (managerComment) {
+        submittedEvaluations.push({
+            managerComment: managerComment,
+        });
+    }
+
     await addDoc(collection(firestore, 'SubmittedEvaluations'), {
         project_id: projectID,
         evaluations: submittedEvaluations,
@@ -338,10 +397,16 @@ window.addEvaluate = async function (event) {
             const performanceData = doc.data();
 
             const existingRating = parseFloat(performanceData.evaluation_rate) || 0;
-            const totalRating = (existingRating + subRating) / 2;
-            const updatedRating = Math.min(Math.max(totalRating, 1), 5);
+            let updatedRating;
 
-            const finalRating = updatedRating.toFixed(2);
+            if (existingRating === 0) {
+                updatedRating = subRating;
+            } else {
+                const totalRating = (existingRating + subRating) / 2;
+                updatedRating = Math.min(Math.max(totalRating, 1), 5);
+            }
+
+            finalRating = updatedRating.toFixed(2);
 
             console.log('Final Rating:', finalRating);
 
@@ -360,8 +425,6 @@ window.addEvaluate = async function (event) {
     alert('Performance data updated successfully.');
     toRefresh();
 }
-
-
 
 
 
@@ -414,10 +477,6 @@ function filterTable2() {
 document.getElementById("searchInput").addEventListener("keyup", filterTable);
 document.getElementById("searchInput2").addEventListener("keyup", filterTable2);
 
-
-window.addEventListener('DOMContentLoaded', function () {
-
-});
 
 function toRefresh() {
     setTimeout(() => {

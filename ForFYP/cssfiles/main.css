@@ -882,6 +882,10 @@ div#rateOptions {
     font-weight: 800;
 }
 
+.rateCol {
+    text-align: center;
+}
+
 
 /* Payroll */
 .payrollTable #fileCol,
