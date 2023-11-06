@@ -37,6 +37,7 @@
 
         <div class="overlay-bg" id="overlayBg"></div>
 
+        <!-- Add employee -->
         <div id="overlay" class="overlay">
             <form>
                 <h3><b>Employee Details</b></h3>
@@ -85,6 +86,10 @@
                     <label>Salary</label><br />
                 </div>
 
+                <div class="InputFile">
+                    <input type="file" name="imageUpload" id="imageUpload" accept=".jpg" multiple>
+                </div>
+
                 <div class="addBtn-btn">
                     <input type="submit" name="Add" id="Add" value="Add Employee" class="addBtn"
                         onclick="addEmp(event)">
@@ -94,6 +99,7 @@
             </form>
         </div>
 
+        <!-- Edit Details -->
         <div id="editOverlay" class="overlay">
             <form>
                 <h3><b>Edit Employee Details</b></h3>

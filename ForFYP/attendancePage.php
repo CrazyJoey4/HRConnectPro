@@ -15,13 +15,15 @@
     <script src="jsfiles/faceapi/face-api.min.js"></script>
 
     <script defer src="jsfiles/faceapi/face-api.min.js"></script>
-    <script defer src="jsfiles/attendance.js"></script>
+    <script type="module" defer src="jsfiles/attendance.js"></script>
 
 </head>
 
 <body>
     <div class="wrap">
         <h1>Attendance</h1>
+
+
         <div class="toClockWrap">
             <div class="videoCapture">
                 <video id="video" width="600" height="450" autoplay></video>
@@ -29,18 +31,42 @@
             </div>
 
             <div class="buttonGroup">
+                <div class="currentDateTime">
+                    <div class="dateTime" id="dateTime"></div>
+                    <div class="clock" id="clock"></div>
+                </div>
+
                 <button class='add_btn clock_btn clockIn' id="clockInButton">Clock In &nbsp;<i
                         class="fas fa-clock"></i></button>
-                <button class='add_btn clock_btn clockOut' id="clockInButton">Clock Out &nbsp;<i
+                <button class='add_btn clock_btn clockOut' id="clockOutButton">Clock Out &nbsp;<i
                         class="far fa-clock"></i></button>
             </div>
         </div>
 
-
-
     </div>
 
+    <script>
+        function updateTime() {
+            const dateElement = document.getElementById('dateTime');
+            const clockElement = document.getElementById('clock');
 
+            const now = new Date();
+
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const dayString = days[now.getDay()];
+
+            const dateString = `${now.getDate().toString().padStart(2, '0')} - ${(now.getMonth() + 1).toString().padStart(2, '0')} - ${now.getFullYear()}`;
+            const timeString = now.toLocaleTimeString();
+
+            dateElement.textContent = `${dayString} | ${dateString}`;
+            clockElement.textContent = timeString;
+
+            setTimeout(updateTime, 1000);
+        }
+
+        // Start updating the time
+        updateTime();
+    </script>
 </body>
 
 </html>

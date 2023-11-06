@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, deleteUser } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import { getFirestore, collection, getDocs, query, where, updateDoc, deleteDoc, addDoc, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL, uploadBytesResumable } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-storage.js";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -16,6 +17,7 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
+const storage = getStorage(firebaseApp);
 
 var userId = localStorage.getItem('userId');
 
@@ -162,28 +164,24 @@ async function generateNewUID() {
     return newUID;
 }
 
-// Add Employee
 window.addEmp = async function (event) {
     event.preventDefault();
 
-    // Get employee details from the form
     const name = document.getElementById("UserName").value;
     const email = document.getElementById("email").value;
     const constemail = document.getElementById("constEmail").value;
     const countryCode = document.getElementById("countryCode").value;
     const phoneNo = document.getElementById("phoneNo").value;
     const salary = document.getElementById("salary").value;
-
+    const imageUploadInput = document.getElementById("imageUpload");
     const selectedDep = document.getElementById("depOption").value;
     const selectedPos = document.getElementById("posOption").value;
 
-    // Validate fields
     if (name == "" || email == "" || phoneNo == "" || selectedDep == "" || selectedPos == "" || salary == "") {
-        alert('Please enter all fields and select a department and position !');
+        alert('Please enter all fields and select a department and position!');
         return;
     }
 
-    // Capitalize the first letter of each word in the name
     let capitalizedName = name.toLowerCase().replace(/\b\w/g, function (l) {
         return l.toUpperCase();
     });
@@ -200,7 +198,57 @@ window.addEmp = async function (event) {
     const currentDate = new Date().toISOString().split('T')[0];
     const finalEmail = `${email}${constemail}`;
 
-    console.log(capitalizedName);
+    const selectedFiles = imageUploadInput.files;
+    const maxImages = 5;
+
+    if (selectedFiles.length !== maxImages) {
+        alert('Please select exactly 5 images for the employee.');
+        return;
+    }
+
+    const imageRefs = [];
+    let uploadedImageCount = 0;
+
+    // Function to upload a single image
+    function uploadImage(imageIndex) {
+        const index = imageIndex + 1;
+        const imageName = `employeeFace/${userID}/${index}.jpg`;
+        const imageRef = ref(storage, imageName);
+
+        const file = selectedFiles[imageIndex];
+        const uploadTask = uploadBytesResumable(imageRef, file);
+
+        return new Promise((resolve, reject) => {
+            on(
+                uploadTask,
+                "state_changed",
+                () => { },
+                (error) => {
+                    alert("Image upload error:", error);
+                    console.error("Image upload error:", error);
+                    reject(error);
+                },
+                () => {
+                    alert("Image upload successful for image #" + (index));
+                    console.log("Image upload successful for image #" + (index));
+                    imageRefs.push(imageRef);
+                    uploadedImageCount++;
+
+                    if (uploadedImageCount === maxImages) {
+                        resolve();
+                    }
+                }
+            );
+        });
+    }
+
+    // Use a loop to upload all images
+    const uploadPromises = [];
+    for (let i = 0; i < maxImages; i++) {
+        uploadPromises.push(uploadImage(i));
+    }
+
+    console.log("All images uploaded successfully!");
 
     addDoc(collection(firestore, "users"), {
         name: capitalizedName,
@@ -209,11 +257,9 @@ window.addEmp = async function (event) {
         salary: salary,
         dep_id: selectedDep,
         pos_id: selectedPos,
-
         uid: userID,
         hire_date: currentDate,
-
-        leave_balance: "",
+        leave_balance: 0,
         gender: "",
         dob: "",
         address: "",
@@ -223,7 +269,6 @@ window.addEmp = async function (event) {
     })
         .then(function (docRef) {
             alert("Employee added ", docRef.uid);
-
             toRefresh();
         })
         .catch(function (error) {
@@ -231,16 +276,21 @@ window.addEmp = async function (event) {
             alert("Error adding employee: ", error);
         });
 
+
     // Clear form
     document.getElementById("overlay").style.display = "none";
+    document.getElementById("overlayBg").style.display = "none";
     document.getElementById("UserName").value = "";
     document.getElementById("email").value = "";
     document.getElementById("phoneNo").value = "";
     document.getElementById("salary").value = "";
-
+    document.getElementById("imageUpload").value = "";
     document.getElementById("depOption").value = "<option value=''>Select Department</option>";
     document.getElementById("posOption").value = "<option value=''>Select Position</option>";
+
+    toRefresh();
 }
+
 
 
 // For Edit button
@@ -381,11 +431,27 @@ function filterTable() {
 // Attach an event listener to the search input field
 document.getElementById("searchInput").addEventListener("keyup", filterTable);
 
-
+// Validate
 function validate_phone(phoneNumber) {
     const phonePattern = /^\d{9,10}$/;
     return phonePattern.test(phoneNumber);
 }
+
+// Validate selected files
+const imageUploadInput = document.getElementById("imageUpload");
+
+imageUploadInput.addEventListener("change", function () {
+    const selectedFiles = imageUploadInput.files;
+
+    for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        if (file.type !== "image/jpeg") {
+            alert("Please select only .jpg files.");
+            imageUploadInput.value = "";
+            return;
+        }
+    }
+});
 
 window.addEventListener('DOMContentLoaded', function () {
     generateDep();

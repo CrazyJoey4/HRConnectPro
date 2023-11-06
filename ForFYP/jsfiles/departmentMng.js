@@ -151,7 +151,7 @@ window.adddep = async function (event) {
         manager_pid: managerPID,
     })
         .then(async function (docRef) {
-            alert("Department added : ", docRef.dep_name);
+            alert("Department added : ", name);
 
             const posName = `${name} Manager`;
 
@@ -194,19 +194,19 @@ window.addpos = async function (event) {
         pos_desc: name,
         pos_id: posID,
     })
-        .then(async function () {
-            alert("Position added : ", name);
-
-            toRefresh();
+        .then(async function (doc) {
+            console.log(doc.data());
+            alert("Position added");
         })
         .catch(function (error) {
-            console.error("Error adding department: ", error);
-            alert("Error adding department: ", error);
+            console.error("Error adding position: ", error);
+            alert("Error adding position: ", error);
         });
 
     // Clear form
     document.getElementById("overlay").style.display = "none";
     document.getElementById("name").value = "";
+    toRefresh();
 }
 
 
