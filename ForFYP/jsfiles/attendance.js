@@ -20,7 +20,6 @@ const firestore = getFirestore(firebaseApp);
 const storage = getStorage(firebaseApp);
 
 var userId = localStorage.getItem('userId');
-// userId = 'EMP_008';
 
 
 // Face Recognition
@@ -49,19 +48,20 @@ function startWebcam() {
         });
 }
 
-// Get Label description
-function getLabeledFaceDescriptions() {
+async function getLabeledFaceDescriptions() {
     const labels = [userId];
     return Promise.all(
         labels.map(async (label) => {
             const descriptions = [];
             for (let i = 1; i <= 5; i++) {
                 const img = await faceapi.fetchImage(`jsfiles/faceapi/labels/${label}/${i}.jpg`);
-                const detections = await faceapi
+                const detection = await faceapi
                     .detectSingleFace(img)
                     .withFaceLandmarks()
                     .withFaceDescriptor();
-                descriptions.push(detections.descriptor);
+                if (detection) {
+                    descriptions.push(detection.descriptor);
+                }
             }
             return new faceapi.LabeledFaceDescriptors(label, descriptions);
         })
@@ -280,17 +280,19 @@ function calculateClockDuration(clockInTime, clockOutTime) {
 // Function to parse time string to a Date object
 function parseTimeStringToDateTime(timeString) {
     const [time, meridian] = timeString.split(' ');
-    const [hour, minute, second] = time.split(':').map(Number);
+    let [hour, minute, second] = time.split(':').map(Number);
+
+    let currentDate = new Date();
 
     if (meridian === 'PM' && hour !== 12) {
-        hour += 12; // Convert to 24-hour format
+        hour += 12;
     }
 
-    const currentDate = new Date();
-    currentDate.setHours(hour, minute, second);
+    currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), hour, minute, second);
 
     return currentDate;
 }
+
 
 // Function to capture an image from the video
 async function captureImage() {

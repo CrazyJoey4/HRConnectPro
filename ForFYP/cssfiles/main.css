@@ -745,6 +745,17 @@ select.maritalOptions {
     float: left;
 }
 
+/* Dashboard */
+.forChart {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.forGraph {
+    width: 500px !important;
+    height: 500px !important;
+}
+
 /* Employee */
 .forEmail {
     display: flex;
