@@ -760,11 +760,6 @@ select.maritalOptions {
 }
 
 .forBarGraph {
-    width: 650px !important;
-    height: 400px !important;
-}
-
-#top10Chart {
     width: 65% !important;
     height: 400px !important;
 }

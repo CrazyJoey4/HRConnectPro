@@ -32,11 +32,11 @@
 
         <div class="forChart">
             <canvas class="forGraph" id="performanceStatusPieChart"></canvas>
-            <canvas class="forBarGraph" id="employeeCountsByDepartmentChart"></canvas>
-        </div>
-
-        <div class="forChart">
             <canvas class="forGraph" id="projectStatusPieChart"></canvas>
+        </div>
+        
+        <div class="forChart">
+            <canvas class="forBarGraph" id="employeeCountsByDepartmentChart"></canvas>
         </div>
 
         
