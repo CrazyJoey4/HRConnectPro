@@ -35,12 +35,15 @@
             <canvas class="forBarGraph" id="employeeCountsByDepartmentChart"></canvas>
         </div>
 
+        <div class="forChart">
+            <canvas class="forGraph" id="projectStatusPieChart"></canvas>
+        </div>
+
         
         
     </div>
 
     <script type="module" src="jsfiles/dashboard.js"></script>
-    <!-- <script type="module" src="jsfiles/forImport.js"></script> -->
 
     <script>
         function updateTime() {

@@ -284,16 +284,6 @@ async function createEmployeeCountsByDepartmentChart() {
     });
 }
 
-
-window.addEventListener('DOMContentLoaded', () => {
-    createClockInPieChart();
-    createLeaveStatusPieChart();
-    createPerformanceStatusPieChart();
-    createEmployeeCountsByDepartmentChart();
-    createTop10Chart();
-});
-
-
 let rankingData = [];
 
 // To calculate the ranking based on performance and attendance
@@ -441,3 +431,72 @@ async function createTop10Chart() {
         },
     });
 }
+
+
+// To count projects by status
+async function countProjectsByStatus() {
+    const projectRef = collection(firestore, 'project');
+    const projectSnapshot = await getDocs(projectRef);
+
+    // Initialize counters for completed and ongoing projects
+    let completedCount = 0;
+    let ongoingCount = 0;
+
+    projectSnapshot.forEach((doc) => {
+        const data = doc.data();
+        const projectStatus = data.project_status;
+
+        // Check the project status and increment the respective counter
+        if (projectStatus === 'Completed') {
+            completedCount++;
+        } else if (projectStatus === 'Ongoing') {
+            ongoingCount++;
+        }
+    });
+
+    return { completedCount, ongoingCount };
+}
+
+// To create a pie chart showing project status distribution
+async function createProjectStatusPieChart() {
+    const { completedCount, ongoingCount } = await countProjectsByStatus();
+
+    const labels = ['Completed', 'Ongoing'];
+    const data = [completedCount, ongoingCount];
+
+    // Create a chart
+    const ctx = document.getElementById('projectStatusPieChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    data: data,
+                    backgroundColor: ['#96ffb0', '#96c0ff'],
+                },
+            ],
+        },
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Project Current Status',
+                    font: {
+                        size: 16,
+                    },
+                },
+            },
+        },
+    });
+}
+
+
+window.addEventListener('DOMContentLoaded', () => {
+    createClockInPieChart();
+    createLeaveStatusPieChart();
+    createPerformanceStatusPieChart();
+    createEmployeeCountsByDepartmentChart();
+    createTop10Chart();
+    createProjectStatusPieChart();
+});
