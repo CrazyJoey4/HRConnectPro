@@ -19,6 +19,7 @@ const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
 
 var userId = localStorage.getItem('userId');
+// userId = "EMP_005";
 
 
 window.addEventListener('DOMContentLoaded', function () {

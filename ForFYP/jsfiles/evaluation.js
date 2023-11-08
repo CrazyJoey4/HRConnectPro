@@ -18,7 +18,7 @@ const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
 
 var userId = localStorage.getItem('userId');
-
+// userId = "EMP_005";
 
 // Function to fetch evaluation details
 document.addEventListener("DOMContentLoaded", async function () {
@@ -124,8 +124,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
 
-
-
 // Function to fetch performance details
 document.addEventListener("DOMContentLoaded", async function () {
     window.fetchPerformanceDetails = async function () {
@@ -200,6 +198,7 @@ async function getUserData(userId) {
     }
 }
 
+// Function to fetch team members
 async function generateTeamMembers(projectID) {
     const memberSelect = document.getElementById("memberSelect");
     memberSelect.innerHTML = `<option value="">Select a Team Member</option>`;
@@ -216,9 +215,9 @@ async function generateTeamMembers(projectID) {
 
         for (const uid of teamMemberUIDs) {
             if (uid !== userId) {
-                const hasPerformanceRecord = await checkPerformanceRecord(projectID, uid);
+                const hasSubmittedEvaluation = await checkPerformanceRecord(projectID, uid);
 
-                if (hasPerformanceRecord) {
+                if (!hasSubmittedEvaluation) {
                     const userName = await getUserData(uid);
                     const option = document.createElement("option");
                     option.value = uid;
@@ -231,18 +230,18 @@ async function generateTeamMembers(projectID) {
 }
 
 async function checkPerformanceRecord(projectID, uid) {
-    const performanceRef = collection(firestore, 'performance');
-    const performanceQuery = query(performanceRef, where('project_id', '==', projectID), where('uid', '==', uid));
+    const performanceRef = collection(firestore, 'SubmittedEvaluations');
+    const performanceQuery = query(performanceRef, where('project_id', '==', projectID), where('received_uid', '==', uid));
     const performanceQuerySnapshot = await getDocs(performanceQuery);
 
     if (!performanceQuerySnapshot.empty) {
-        const performanceDoc = performanceQuerySnapshot.docs[0].data();
-        const unsubmitID = performanceDoc.unsubmitID;
-        return unsubmitID.includes(userId);
+        // Check if the current user has already submitted an evaluation for this team member
+        return performanceQuerySnapshot.docs.some(doc => doc.data().uid === userId);
     }
 
     return false;
 }
+
 
 
 
@@ -413,6 +412,13 @@ window.addEvaluate = async function (event) {
                 evaluation_rate: finalRating,
                 unsubmitID: performanceData.unsubmitID.filter(id => id !== userId),
             });
+
+            // Include the managerComment if it exists
+            if (managerComment) {
+                await updateDoc(performanceDocRef, {
+                    evaluation_review: managerComment,
+                });
+            }
 
             console.log('Performance data updated successfully.');
         });

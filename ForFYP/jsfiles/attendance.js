@@ -21,7 +21,6 @@ const storage = getStorage(firebaseApp);
 
 var userId = localStorage.getItem('userId');
 
-
 // Face Recognition
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");

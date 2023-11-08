@@ -128,7 +128,7 @@ async function createLeaveStatusPieChart() {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Performance Status',
+                    text: 'Laave Approval Status',
                     font: {
                         size: 16,
                     },
