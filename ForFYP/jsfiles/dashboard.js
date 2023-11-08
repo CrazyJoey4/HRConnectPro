@@ -266,7 +266,9 @@ async function createEmployeeCountsByDepartmentChart() {
             scales: {
                 y: {
                     beginAtZero: true,
-                    stepSize: 1,
+                    ticks: {
+                        stepSize: 1,
+                    },
                 },
             },
             plugins: {
@@ -288,4 +290,154 @@ window.addEventListener('DOMContentLoaded', () => {
     createLeaveStatusPieChart();
     createPerformanceStatusPieChart();
     createEmployeeCountsByDepartmentChart();
+    createTop10Chart();
 });
+
+
+let rankingData = [];
+
+// To calculate the ranking based on performance and attendance
+async function calculateRanking() {
+    const performanceRef = collection(firestore, 'performance');
+    const attendanceRef = collection(firestore, 'attendance');
+    const usersRef = collection(firestore, 'users');
+
+    rankingData = [];
+
+    const performanceSnapshot = await getDocs(performanceRef);
+
+    // Initialize a Map to store total ratings for each user
+    const totalRatingsMap = new Map();
+
+    performanceSnapshot.forEach((doc) => {
+        const data = doc.data();
+        const userId = data.uid;
+        const evaluationRate = data.evaluation_rate || 0;
+
+        // Check if the employee already has a total rating in the Map
+        if (totalRatingsMap.has(userId)) {
+            // If yes, update the total rating
+            totalRatingsMap.set(userId, totalRatingsMap.get(userId) + evaluationRate);
+        } else {
+            // If no, add the user to the Map with the initial rating
+            totalRatingsMap.set(userId, evaluationRate);
+        }
+    });
+
+    // Fetch data from the attendance for the last month
+    const lastMonth = new Date();
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+
+    const attendanceSnapshot = await getDocs(query(attendanceRef, where('date', '>=', lastMonth)));
+
+    attendanceSnapshot.forEach((doc) => {
+        const data = doc.data();
+        const userId = data.uid;
+
+        // Check if the employee has attended every day
+        if (totalRatingsMap.has(userId)) {
+            const attendanceBonus = calculateAttendanceBonus([data.date]);
+            totalRatingsMap.set(userId, totalRatingsMap.get(userId) + attendanceBonus);
+        }
+    });
+
+    // Initialize a Set to keep track of processed user IDs
+    const processedUserIds = new Set();
+
+    // Iterate through users to build the rankingData array
+    const usersSnapshot = await getDocs(usersRef);
+    usersSnapshot.forEach((doc) => {
+        const userData = doc.data();
+        const userId = userData.uid;
+
+        // Check if the employee has ratings in the Map and has not been processed before
+        if (totalRatingsMap.has(userId) && !processedUserIds.has(userId)) {
+            // If yes, add the user to the rankingData array with the total rating
+            rankingData.push({
+                userId: userId,
+                userName: userData.name,
+                totalRating: totalRatingsMap.get(userId),
+            });
+
+            // Add the processed user to the Set to avoid duplicates
+            processedUserIds.add(userId);
+        }
+    });
+
+    // Sort in descending order
+    rankingData.sort((a, b) => b.totalRating - a.totalRating);
+}
+
+// Helper function to calculate attendance bonus
+function calculateAttendanceBonus(attendanceDates) {
+    const bonusFactor = 0.5;
+    const totalDaysInMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 0).getDate();
+
+    if (attendanceDates && attendanceDates.length === totalDaysInMonth) {
+        return bonusFactor;
+    } else {
+        return 0;
+    }
+}
+
+
+// Function to create a bar chart for the top 10 employees
+async function createTop10Chart() {
+    // Call the calculateRanking function
+    await calculateRanking();
+
+    // After calculating the ranking, get the top 10 employees
+    const top10Employees = rankingData.slice(0, 10);
+
+    const barColors = [
+        'rgba(92, 70, 156, 1)',
+        'rgba(116, 92, 170, 1)',
+        'rgba(141, 114, 183, 1)',
+        'rgba(166, 137, 197, 1)',
+        'rgba(192, 160, 211, 1)',
+        'rgba(217, 183, 225, 1)',
+        'rgba(242, 206, 239, 1)',
+        'rgba(236, 198, 220, 1)',
+        'rgba(230, 189, 200, 1)',
+        'rgba(224, 181, 181, 1)'];
+    const backgroundColors = barColors.slice(0, top10Employees.length);
+
+    // Create the top 10 chart
+    const labels = top10Employees.map((employee) => employee.userName);
+    const data = top10Employees.map((employee) => employee.totalRating);
+
+    // Create a chart
+    const ctx = document.getElementById('top10Chart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Total Rating',
+                    data: data,
+                    backgroundColor: backgroundColors,
+                },
+            ],
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                    },
+                },
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Top 10 Employees of the Month',
+                    font: {
+                        size: 16,
+                    },
+                },
+            },
+        },
+    });
+}

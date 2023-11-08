@@ -22,6 +22,10 @@
         </div>
 
         <div class="forChart">
+            <canvas class="forBarGraph" id="top10Chart"></canvas>
+        </div>
+
+        <div class="forChart">
             <canvas class="forGraph" id="clockInPieChart"></canvas>
             <canvas class="forGraph" id="leaveStatusPieChart"></canvas>
         </div>
@@ -30,9 +34,9 @@
             <canvas class="forGraph" id="performanceStatusPieChart"></canvas>
             <canvas class="forBarGraph" id="employeeCountsByDepartmentChart"></canvas>
         </div>
-        
-        <!-- <button id="insertDataButton">Insert Attendance Data</button> -->
 
+        
+        
     </div>
 
     <script type="module" src="jsfiles/dashboard.js"></script>

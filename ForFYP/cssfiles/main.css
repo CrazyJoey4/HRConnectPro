@@ -764,6 +764,11 @@ select.maritalOptions {
     height: 400px !important;
 }
 
+#top10Chart {
+    width: 65% !important;
+    height: 400px !important;
+}
+
 /* Employee */
 .forEmail {
     display: flex;

@@ -453,10 +453,6 @@ window.editProject = async function (projectID) {
                                     selectedEmployeeNames.push(employeeName);
                                 }
                             }
-
-                            // Display the selected employee names
-                            const selectedEmployeeNamesDiv = document.getElementById("editSelectedEmployeeNames");
-                            selectedEmployeeNamesDiv.innerHTML = selectedEmployeeNames.join(', ');
                         }
                     })
                     .catch((error) => {
