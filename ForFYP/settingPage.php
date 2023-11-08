@@ -12,12 +12,13 @@
 
 <body>
     <div class="wrap">
-        <h1>Settings</h1>
-
-        <div class="tab_btn">
+        <!--    
+            <h1>Settings</h1>
+        
+         <div class="tab_btn">
             <button class="tablinks leaveManagement" onclick="openTab(event, 'leaveManagement')">Leave Management</button>
             <button class="tablinks" onclick="openTab(event, 'faqManagement')">FAQ Management</button>
-        </div>
+        </div> -->
 
         <div id="leaveManagement" class="tabcontent">
             <div class="topTitle">
@@ -129,12 +130,12 @@
             </div>
         </div>
 
-        <div id="faqManagement" class="tabcontent">
+        <!-- <div id="faqManagement" class="tabcontent">
             <h1>FAQs</h1>
 
             <div id="faq"></div>
 
-        </div>
+        </div> -->
 
 
     </div>
@@ -160,6 +161,7 @@
             fetchLeaveDetails();
         });
 
+        /*
         function openTab(evt, tabName) {
             var i, tabcontent, tablinks;
             tabcontent = document.getElementsByClassName("tabcontent");
@@ -178,6 +180,7 @@
             openTab(event, 'leaveManagement');
             document.querySelector(".leaveManagement").classList.add("active");
         });
+        */
     </script>
 
     <script src="tinymce/js/tinymce/tinymce.min.js"></script>

@@ -28,15 +28,15 @@
 
         <div class="forChart">
             <canvas class="forGraph" id="performanceStatusPieChart"></canvas>
+            <canvas class="forBarGraph" id="employeeCountsByDepartmentChart"></canvas>
         </div>
-
-
+        
         <!-- <button id="insertDataButton">Insert Attendance Data</button> -->
 
     </div>
 
     <script type="module" src="jsfiles/dashboard.js"></script>
-    <script type="module" src="jsfiles/forImport.js"></script>
+    <!-- <script type="module" src="jsfiles/forImport.js"></script> -->
 
     <script>
         function updateTime() {

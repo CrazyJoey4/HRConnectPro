@@ -131,11 +131,6 @@
                     <label>Project Manager</label><br>
                 </div>
 
-                <div class="selectedEmployees selectWrap showNames">
-                    <label>Selected Employees:</label>
-                    <div id="editSelectedEmployeeNames"></div>
-                </div>
-
                 <div class="InputTextarea">
                     <label>Project Description</label><br>
                     <textarea name="editDescription" id="editDescription" required></textarea>

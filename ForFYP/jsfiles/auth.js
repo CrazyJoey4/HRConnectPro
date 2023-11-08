@@ -19,7 +19,7 @@ const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
 
 var userId = localStorage.getItem('userId');
-// userId = 'EMP_008';
+
 
 window.addEventListener('DOMContentLoaded', function () {
     checkLoggedIn();
@@ -98,7 +98,9 @@ async function getPosition() {
         if (!depSnapshot.empty) {
             const currentPage = window.location.pathname.split('/').pop();
             const depData = depSnapshot.docs[0].data();
-            const isHRManager = depData.manager_pid === posID;
+            const isHRManager = posID === "P00001";
+            const isManager = depData.manager_pid === posID;
+            const isHR = depID === "DEP_001";
 
             if (isHRManager) {
                 document.getElementById("management_part").style.display = "block";
@@ -108,7 +110,21 @@ async function getPosition() {
                 const managePart = document.querySelector('.sidenav .management_tab');
 
                 managePart.insertBefore(departmentTab, managePart.firstChild);
+
+            } else if (isHR) {
+                document.getElementById("management_part").style.display = "block";
+                document.getElementById("performanceMnagePage").style.display = "none";
+                document.getElementById("leaveManagePage").style.display = "none";
+
+            } else if(isManager) {
+                document.getElementById("management_part").style.display = "block";
+                document.getElementById("empManagePage").style.display = "none";
+                document.getElementById("payrollPage").style.display = "none";
+                document.getElementById("settingPage").style.display = "none";
+                
             }
+
+
         } else {
             console.log("Cannot fetch");
         }

@@ -20,7 +20,7 @@ const firestore = getFirestore(firebaseApp);
 
 var userId = localStorage.getItem('userId');
 
-// Function to fetch all user IDs from the "users" collection
+// To fetch all user IDs
 async function fetchUserIDs() {
     const usersRef = collection(firestore, 'users');
     const usersQuery = query(usersRef);
@@ -33,11 +33,10 @@ async function fetchUserIDs() {
         userIDs.push(userData);
     });
 
-    console.log(userIDs);
     return userIDs;
 }
 
-// Function to check if an employee has clocked in for a given date
+// To check if an employee has clocked in for a given date
 async function hasClockedInForDate(userId, date) {
     const attendanceRef = collection(firestore, 'attendance');
     const queryByDate = query(attendanceRef, where('uid', '==', userId), where('date', '==', date));
@@ -46,7 +45,7 @@ async function hasClockedInForDate(userId, date) {
     return !querySnapshot.empty;
 }
 
-// Function to create a pie chart showing employees who have clocked in or not
+// To create a pie chart showing employees who have clocked in or not
 async function createClockInPieChart() {
     const userIDs = await fetchUserIDs();
 
@@ -57,7 +56,7 @@ async function createClockInPieChart() {
     for (const userId of userIDs) {
         const now = new Date();
         const dateString = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
-        console.log(dateString);
+
         const hasClockedIn = await hasClockedInForDate(userId, dateString);
         if (hasClockedIn) {
             employeesClockedIn.push(userId);
@@ -93,7 +92,8 @@ async function createClockInPieChart() {
     });
 }
 
-// Function to fetch leave data based on status
+
+// To fetch leave data based on status
 async function fetchLeaveDataByStatus(status) {
     const leaveApplyRef = collection(firestore, 'leaveApply');
     const queryByStatus = query(leaveApplyRef, where('approve_status', '==', status));
@@ -102,7 +102,7 @@ async function fetchLeaveDataByStatus(status) {
     return querySnapshot.size; // Get the number of leaves with the specified status
 }
 
-// Function to create a pie chart showing leave status distribution
+// To create a pie chart showing leave status distribution
 async function createLeaveStatusPieChart() {
     const pendingLeaves = await fetchLeaveDataByStatus('Pending');
     const approvedLeaves = await fetchLeaveDataByStatus('Approved');
@@ -138,7 +138,8 @@ async function createLeaveStatusPieChart() {
     });
 }
 
-// Function to fetch performance data and classify it
+
+// To fetch performance data and classify it
 async function fetchPerformanceDataAndClassify() {
     const performanceRef = collection(firestore, 'performance');
     const queryAllPerformance = query(performanceRef);
@@ -168,16 +169,10 @@ async function fetchPerformanceDataAndClassify() {
         }
     });
 
-    // Now you can access evaluations by employee ID
-    console.log(evaluations);
-    console.log(yetToSubmitCount);
-    console.log(completedCount);
-
     return { yetToSubmitCount, completedCount, evaluations };
 }
 
-
-// Function to create a pie chart showing performance classification
+// To create a pie chart showing performance classification
 async function createPerformanceStatusPieChart() {
     const { yetToSubmitCount, completedCount, evaluations } = await fetchPerformanceDataAndClassify();
 
@@ -201,7 +196,7 @@ async function createPerformanceStatusPieChart() {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Performance Status',
+                    text: 'Evaluation Submission Status',
                     font: {
                         size: 16,
                     },
@@ -209,15 +204,88 @@ async function createPerformanceStatusPieChart() {
             },
         },
     });
+}
 
-    console.log(evaluations);
+// To count employees by department
+async function countEmployeesByDepartment() {
+    // Initialize objects to store department names and employee counts
+    const departmentNames = {};
+    const departmentCounts = {};
+
+    // Fetch data from the "department" collection
+    const departmentRef = collection(firestore, 'department');
+    const departmentSnapshot = await getDocs(departmentRef);
+
+    // Iterate through the departments and initialize counts
+    departmentSnapshot.forEach((doc) => {
+        const data = doc.data();
+        const depId = data.dep_id;
+        departmentNames[depId] = data.dep_name;
+        departmentCounts[depId] = 0;
+    });
+
+    // Fetch data from the "users" collection to count employees in each department
+    const usersRef = collection(firestore, 'users');
+    const usersSnapshot = await getDocs(usersRef);
+
+    usersSnapshot.forEach((doc) => {
+        const data = doc.data();
+        const depId = data.dep_id;
+
+        // Check if the department exists
+        if (departmentCounts[depId] !== undefined) {
+            departmentCounts[depId]++;
+        }
+    });
+
+    return { departmentNames, departmentCounts };
+}
+
+// To create a bar chart showing employee counts by department
+async function createEmployeeCountsByDepartmentChart() {
+    const { departmentNames, departmentCounts } = await countEmployeesByDepartment();
+
+    const labels = Object.values(departmentNames);
+    const data = Object.values(departmentCounts);
+
+    // Create a chart
+    const ctx = document.getElementById('employeeCountsByDepartmentChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Employee Count',
+                    data: data,
+                    backgroundColor: '#5C469C',
+                },
+            ],
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    stepSize: 1,
+                },
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Employee',
+                    font: {
+                        size: 16,
+                    },
+                },
+            },
+        },
+    });
 }
 
 
-// Add the charts when the document is ready
 window.addEventListener('DOMContentLoaded', () => {
     createClockInPieChart();
     createLeaveStatusPieChart();
     createPerformanceStatusPieChart();
+    createEmployeeCountsByDepartmentChart();
 });
-

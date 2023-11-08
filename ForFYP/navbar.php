@@ -60,20 +60,20 @@
                 <h4>Management</h4>
 
                 <ul class="management_tab">
-                    <li><a href="empManagePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'empManagePage.php')
+                    <li id="empManagePage"><a href="empManagePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'empManagePage.php')
                         echo 'class="active"'; ?>><span class="fa fa-user-tie"></span> Employee Management </a></li>
 
-                    <li><a href="performanceMnagePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'performanceMnagePage.php')
+                    <li id="performanceMnagePage"><a href="performanceMnagePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'performanceMnagePage.php')
                         echo 'class="active"'; ?>><span
                                 class="fa fa-bullseye"></span> Project Performance </a></li>
 
-                    <li><a href="leaveManagePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'leaveManagePage.php')
+                    <li id="leaveManagePage"><a href="leaveManagePage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'leaveManagePage.php')
                         echo 'class="active"'; ?>><span class="fa fa-calendar"></span> Leave Approval </a></li>
 
-                    <li><a href="payrollPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'payrollPage.php')
+                    <li id="payrollPage"><a href="payrollPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'payrollPage.php')
                         echo 'class="active"'; ?>><span class="fa fa-wallet"></span> Payroll </a></li>
 
-                    <li><a href="settingPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'settingPage.php')
+                    <li id="settingPage"><a href="settingPage.php" <?php if (basename($_SERVER['PHP_SELF']) == 'settingPage.php')
                         echo 'class="active"'; ?>><span class="fa fa-cog"></span> Settings </a></li>
                 </ul>
             </div>
