@@ -319,6 +319,7 @@ window.approveLeave = async function (leaveApplyID) {
 // Function to open the reject overlay form
 window.openRejectOverlay = function (leaveApplyID) {
     document.getElementById("rejectReason").value = "";
+    document.getElementById("overlayBg").style.display = "block";
     document.getElementById("overlay").style.display = "block";
 
     const leaveApplyId = leaveApplyID;
