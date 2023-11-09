@@ -107,8 +107,6 @@ window.addleave = async function (event) {
     document.getElementById("typeOption").value = "<option value=''>Select Type</option>";
 }
 
-
-
 // For Edit button
 window.editleave = async function (leaveId) {
     const leaveRef = collection(firestore, 'leave');

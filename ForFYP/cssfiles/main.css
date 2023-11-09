@@ -760,9 +760,8 @@ select.maritalOptions {
 }
 
 .forBarGraph {
-    width: 70% !important;
-    height: 350px !important;
-    aspect-ratio: 16 / 9;
+    width: 60% !important;
+    height: 400px !important;
 }
 
 /* Employee */

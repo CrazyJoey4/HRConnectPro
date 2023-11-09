@@ -389,7 +389,8 @@ async function createTop10Chart() {
         'rgba(242, 206, 239, 1)',
         'rgba(236, 198, 220, 1)',
         'rgba(230, 189, 200, 1)',
-        'rgba(224, 181, 181, 1)'];
+        'rgba(224, 181, 181, 1)'
+    ];
     const backgroundColors = barColors.slice(0, top10Employees.length);
 
     // Create the top 10 chart

@@ -168,8 +168,6 @@ async function handleDepartmentChange() {
     const managerIDInput = document.getElementById("managerID");
     const selectedDep = depSelect.value;
 
-    // generateEmp(selectedDep, managerID);
-
     const depRef = collection(firestore, 'department');
     const q = query(depRef, where('dep_id', '==', selectedDep));
 
@@ -515,7 +513,6 @@ window.saveProjectChanges = async function (event) {
 
     document.getElementById("overlay2").style.display = "none";
     document.getElementById("overlayBg").style.display = "none";
-
     toRefresh();
 }
 

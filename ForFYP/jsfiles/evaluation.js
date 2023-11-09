@@ -35,7 +35,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         const currentDate = new Date();
 
         const projectsRef = collection(firestore, 'project');
-        const performanceRef = collection(firestore, 'performance');
 
         // Query 1: Projects where the project_manager is the current user
         const querySnapshotManager = await getDocs(
@@ -229,13 +228,14 @@ async function generateTeamMembers(projectID) {
     }
 }
 
+
+// Check if the current user has already submitted an evaluation for this team member
 async function checkPerformanceRecord(projectID, uid) {
     const performanceRef = collection(firestore, 'SubmittedEvaluations');
     const performanceQuery = query(performanceRef, where('project_id', '==', projectID), where('received_uid', '==', uid));
     const performanceQuerySnapshot = await getDocs(performanceQuery);
 
     if (!performanceQuerySnapshot.empty) {
-        // Check if the current user has already submitted an evaluation for this team member
         return performanceQuerySnapshot.docs.some(doc => doc.data().uid === userId);
     }
 
