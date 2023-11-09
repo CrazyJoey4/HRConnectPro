@@ -751,17 +751,18 @@ select.maritalOptions {
 .forChart {
     display: flex;
     justify-content: space-evenly;
-    margin: 45px 20px;
+    margin: 45px 0px;
 }
 
 .forGraph {
-    width: 450px !important;
-    height: 450px !important;
+    width: 350px !important;
+    height: 350px !important;
 }
 
 .forBarGraph {
-    width: 65% !important;
-    height: 400px !important;
+    width: 70% !important;
+    height: 350px !important;
+    aspect-ratio: 16 / 9;
 }
 
 /* Employee */
