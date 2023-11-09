@@ -102,7 +102,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (!leaveSnapshot.empty) {
             leaveSnapshot.forEach(async (doc) => {
                 const leaveAData = doc.data();
-                const leaveApplyID = leaveAData.leaveApply_id;
                 const leaveType = await getLeaveName(leaveAData.leave_type);
                 const leaveStartDate = leaveAData.start_date;
                 const leaveEndDate = leaveAData.end_date;
@@ -349,33 +348,10 @@ window.deleteLeave = async function (leaveId) {
     }
 }
 
-// For Search
-function filterTable() {
-    const input = document.getElementById("searchInput");
-    const filter = input.value.toUpperCase();
-    const table = document.getElementById("leaveTable");
-    const rows = table.getElementsByTagName("tr");
-
-    for (let i = 1; i < rows.length; i++) {
-        const nameColumn = rows[i].getElementsByTagName("td")[1];
-        const typeColumn = rows[i].getElementsByTagName("td")[2];
-
-        if (nameColumn || typeColumn) {
-            const nameText = nameColumn.textContent || nameColumn.innerText;
-            const typeText = typeColumn.textContent || typeColumn.innerText;
-
-            if (nameText.toUpperCase().indexOf(filter) > -1 || typeText.toUpperCase().indexOf(filter) > -1) {
-                rows[i].style.display = "";
-            } else {
-                rows[i].style.display = "none";
-            }
-        }
-    }
-}
-
 
 window.addEventListener('DOMContentLoaded', function () {
     generateType();
+    fetchLeaveEventsFromFirebase();
 });
 
 // Initialize FullCalendar
@@ -447,10 +423,6 @@ async function fetchLeaveEventsFromFirebase() {
         calendar.render();
     }
 }
-
-// Fetch and display leave events
-fetchLeaveEventsFromFirebase();
-
 
 function toRefresh() {
     setTimeout(() => {

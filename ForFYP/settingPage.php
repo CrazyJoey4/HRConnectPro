@@ -12,14 +12,6 @@
 
 <body>
     <div class="wrap">
-        <!--    
-            <h1>Settings</h1>
-        
-         <div class="tab_btn">
-            <button class="tablinks leaveManagement" onclick="openTab(event, 'leaveManagement')">Leave Management</button>
-            <button class="tablinks" onclick="openTab(event, 'faqManagement')">FAQ Management</button>
-        </div> -->
-
         <div id="leaveManagement" class="tabcontent">
             <div class="topTitle">
                 <h1>Leave Management</h1>
@@ -129,15 +121,6 @@
                 </form>
             </div>
         </div>
-
-        <!-- <div id="faqManagement" class="tabcontent">
-            <h1>FAQs</h1>
-
-            <div id="faq"></div>
-
-        </div> -->
-
-
     </div>
 
     <script type="module" src="jsfiles/leaveMng.js"></script>
@@ -160,27 +143,6 @@
         window.addEventListener('DOMContentLoaded', function () {
             fetchLeaveDetails();
         });
-
-        /*
-        function openTab(evt, tabName) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
-            tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-            document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.className += " active";
-        }
-
-        window.addEventListener('DOMContentLoaded', function () {
-            openTab(event, 'leaveManagement');
-            document.querySelector(".leaveManagement").classList.add("active");
-        });
-        */
     </script>
 
     <script src="tinymce/js/tinymce/tinymce.min.js"></script>

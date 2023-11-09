@@ -182,8 +182,6 @@ clockOutButton.addEventListener("click", async () => {
             const currentDate = new Date();
             const formattedDate = formatDateToYYYYMMDD(currentDate);
 
-
-
             const clockInTimeDoc = await getClockInTime(userId, formattedDate);
             console.log(clockInTimeDoc.data().clock_in);
 
