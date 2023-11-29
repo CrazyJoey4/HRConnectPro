@@ -198,6 +198,13 @@ window.addEmp = async function (event) {
     const currentDate = new Date().toISOString().split('T')[0];
     const finalEmail = `${email}${constemail}`;
 
+    const phoneDuplicate = await checkPhoneDuplicate(finalPhone);
+
+    if (phoneDuplicate) {
+        alert('The provided phone number is already associated with another employee. Please enter a unique phone number.');
+        return;
+    }
+
     const selectedFiles = imageUploadInput.files;
     const maxImages = 5;
 
@@ -435,6 +442,14 @@ document.getElementById("searchInput").addEventListener("keyup", filterTable);
 function validate_phone(phoneNumber) {
     const phonePattern = /^\d{9,10}$/;
     return phonePattern.test(phoneNumber);
+}
+
+// Avoid phone number duplication
+async function checkPhoneDuplicate(phoneNumber) {
+    const usersRef = collection(firestore, 'users');
+    const querySnapshot = await getDocs(query(usersRef, where('phoneNo', '==', phoneNumber)));
+
+    return !querySnapshot.empty;
 }
 
 // Validate selected files
