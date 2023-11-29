@@ -86,6 +86,9 @@
                     <label>Salary</label><br />
                 </div>
 
+                <br>
+                
+                <label>Add 5 Images of the Employee Face</label>
                 <div class="InputFile">
                     <input type="file" name="imageUpload" id="imageUpload" accept=".jpg" multiple>
                 </div>
